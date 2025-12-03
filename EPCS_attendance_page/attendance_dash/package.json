@@ -1,0 +1,25 @@
+{
+	"name": "attendance-dash",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare"
+	},
+	"dependencies": {
+		"@fullcalendar/core": "^6.1.15",
+		"@fullcalendar/daygrid": "^6.1.15",
+		"@tailwindcss/vite": "^4.1.13",
+		"nuxt": "^4.1.0",
+		"tailwindcss": "^4.1.13",
+		"vue": "^3.5.20",
+		"vue-router": "^4.5.1"
+	},
+	"devDependencies": {
+		"prettier": "^3.6.2"
+	}
+}
+
