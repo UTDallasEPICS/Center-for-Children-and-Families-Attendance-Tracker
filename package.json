@@ -10,9 +10,10 @@
 		"postinstall": "nuxt prepare"
 	},
 	"dependencies": {
-		"@next-auth/prisma-adapter": "^1.0.7",
+		"@prisma/adapter-better-sqlite3": "^7.1.0",
 		"@prisma/client": "^7.1.0",
 		"@tailwindcss/vite": "^4.1.13",
+		"dotenv": "^17.2.3",
 		"nuxt": "^4.1.0",
 		"prettier": "^3.6.2",
 		"tailwindcss": "^4.1.13",
@@ -20,6 +21,8 @@
 		"vue-router": "^4.5.1"
 	},
 	"devDependencies": {
+		"@types/better-sqlite3": "^7.6.13",
+		"@types/node": "^24.10.1",
 		"prisma": "^7.1.0"
 	}
 }

@@ -57,7 +57,7 @@ model Location{
     close_time          Int    
     
     //generated code to check attendance at a location during a workday
-    attendance_code     String  
+    attendance_code     Int  
 
     //list of interns and site manager of specific location
     userId              Int                   @unique
@@ -87,7 +87,7 @@ model Attendance{
 
 model Scheduled_day{
     //date and time intern is scheduled to work
-    id                  Int                   @id@unique
+    id                  Int                   @id@unique @default(autoincrement())
     date                DateTime        
     shift_start         Int
     shift_end           Int
