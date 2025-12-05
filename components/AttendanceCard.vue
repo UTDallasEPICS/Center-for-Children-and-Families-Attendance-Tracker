@@ -58,8 +58,10 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 const emit = defineEmits<{
   checkout: []
   showModal: []
+  showPinModal: []
 }>()
 
+const STORAGE_KEY = 'attendance_checkin_data'
 const status = ref<'not-checked' | 'checked' | 'checked-out'>('not-checked')
 const checkInTimestamp = ref<number | null>(null)
 const checkinTime = ref<string>('')
@@ -97,6 +99,52 @@ function formatElapsed(ms: number): string {
   return `${hours}h ${minutes}m`
 }
 
+function getTodayDateString(): string {
+  const now = new Date()
+  return now.toDateString() // Returns format like "Mon Jan 01 2024"
+}
+
+function saveToLocalStorage() {
+  if (typeof window === 'undefined') return
+  
+  const data = {
+    checkInTimestamp: checkInTimestamp.value,
+    checkinTime: checkinTime.value,
+    status: status.value,
+    elapsedTime: elapsedTime.value,
+    date: getTodayDateString()
+  }
+  
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch (error) {
+    console.error('Failed to save to localStorage:', error)
+  }
+}
+
+function loadFromLocalStorage() {
+  if (typeof window === 'undefined') return null
+  
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (!stored) return null
+    
+    const data = JSON.parse(stored)
+    
+    // Check if the stored data is from today
+    if (data.date !== getTodayDateString()) {
+      // Clear old data if it's from a different day
+      localStorage.removeItem(STORAGE_KEY)
+      return null
+    }
+    
+    return data
+  } catch (error) {
+    console.error('Failed to load from localStorage:', error)
+    return null
+  }
+}
+
 function startElapsedTimer() {
   if (!checkInTimestamp.value) return
   
@@ -109,6 +157,10 @@ function startElapsedTimer() {
 }
 
 function handleCheckIn() {
+  emit('showPinModal')
+}
+
+function processCheckIn() {
   checkInTimestamp.value = Date.now()
   
   const now = new Date()
@@ -120,6 +172,7 @@ function handleCheckIn() {
   
   status.value = 'checked'
   startElapsedTimer()
+  saveToLocalStorage()
 }
 
 function handleCheckOutClick() {
@@ -138,11 +191,43 @@ function handleCheckout() {
   }
   
   status.value = 'checked-out'
+  saveToLocalStorage()
   emit('checkout')
+}
+
+function restoreCheckInState() {
+  const storedData = loadFromLocalStorage()
+  
+  if (storedData && storedData.status === 'checked' && storedData.checkInTimestamp) {
+    // Restore check-in state
+    checkInTimestamp.value = storedData.checkInTimestamp
+    checkinTime.value = storedData.checkinTime
+    status.value = 'checked'
+    
+    // Start the elapsed timer
+    startElapsedTimer()
+  } else if (storedData && storedData.status === 'checked-out') {
+    // Restore checked-out state
+    status.value = 'checked-out'
+    if (storedData.checkInTimestamp) {
+      checkInTimestamp.value = storedData.checkInTimestamp
+      checkinTime.value = storedData.checkinTime
+      
+      // Restore the stored elapsed time if available, otherwise calculate it
+      if (storedData.elapsedTime) {
+        elapsedTime.value = storedData.elapsedTime
+      } else if (storedData.checkInTimestamp) {
+        // Fallback: calculate total time worked (though this shouldn't happen if we saved it)
+        const diff = Date.now() - storedData.checkInTimestamp
+        elapsedTime.value = `Total Time Worked: ${formatElapsed(diff)}`
+      }
+    }
+  }
 }
 
 onMounted(() => {
   updateLiveDate()
+  restoreCheckInState()
 })
 
 onUnmounted(() => {
@@ -151,9 +236,10 @@ onUnmounted(() => {
   }
 })
 
-// Expose checkout function to parent
+// Expose functions to parent
 defineExpose({
-  handleCheckout
+  handleCheckout,
+  processCheckIn
 })
 </script>
 

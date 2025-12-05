@@ -9,6 +9,7 @@
       <AttendanceCard 
         ref="attendanceCardRef"
         @show-modal="showCheckoutModal = true"
+        @show-pin-modal="showCheckInPinModal = true"
       />
 
       <!-- CALENDAR SECTION -->
@@ -22,6 +23,13 @@
     @confirm="handleCheckout"
     @cancel="showCheckoutModal = false"
   />
+
+  <!-- CHECK IN PIN MODAL -->
+  <CheckInPinModal 
+    :show="showCheckInPinModal"
+    @confirm="handleCheckInPin"
+    @cancel="showCheckInPinModal = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -30,9 +38,11 @@ import type { ComponentPublicInstance } from 'vue'
 
 interface AttendanceCardInstance extends ComponentPublicInstance {
   handleCheckout: () => void
+  processCheckIn: () => void
 }
 
 const showCheckoutModal = ref(false)
+const showCheckInPinModal = ref(false)
 const attendanceCardRef = ref<AttendanceCardInstance | null>(null)
 
 const handleCheckout = () => {
@@ -40,6 +50,15 @@ const handleCheckout = () => {
     attendanceCardRef.value.handleCheckout()
   }
   showCheckoutModal.value = false
+}
+
+const handleCheckInPin = (pin: string) => {
+  // Here you can add PIN validation logic if needed
+  // For now, we'll just proceed with check-in after PIN is entered
+  if (attendanceCardRef.value) {
+    attendanceCardRef.value.processCheckIn()
+  }
+  showCheckInPinModal.value = false
 }
 </script>
 
