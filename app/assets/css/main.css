@@ -1,1 +1,110 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+@source "../../components/**/*.{vue,js,ts}";
+@source "../../app/**/*.{vue,js,ts}";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-radius: var(--radius);
+}
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #030213;
+    --card: #ffffff;
+    --card-foreground: #030213;
+    --popover: #ffffff;
+    --popover-foreground: #030213;
+    --primary: #030213;
+    --primary-foreground: #ffffff;
+    --secondary: #ececf0;
+    --secondary-foreground: #030213;
+    --muted: #ececf0;
+    --muted-foreground: #717182;
+    --accent: #e9ebef;
+    --accent-foreground: #030213;
+    --destructive: #d4183d;
+    --destructive-foreground: #ffffff;
+    --border: rgba(0, 0, 0, 0.1);
+    --input: transparent;
+    --input-background: #f3f3f5;
+    --ring: #b3b3b3;
+    --radius: 0.625rem;
+  }
+
+  * {
+    outline: none;
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  button {
+    @apply cursor-pointer select-none transition-all duration-200 font-medium;
+  }
+}
+
+.custom-overflow {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.custom-overflow::-webkit-scrollbar {
+  display: none;
+}
+
+/* Badge color overrides */
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.text-primary-foreground {
+  color: var(--primary-foreground);
+}
+
+.bg-secondary {
+  background-color: var(--secondary);
+}
+
+.text-secondary-foreground {
+  color: var(--secondary-foreground);
+}
+
+.bg-destructive {
+  background-color: var(--destructive);
+}
+
+.text-destructive-foreground {
+  color: var(--destructive-foreground);
+}
+
+.border-border {
+  border-color: var(--border);
+}
+
+.text-foreground {
+  color: var(--foreground);
+}
