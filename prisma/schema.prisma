@@ -29,14 +29,15 @@ model User {
     schedule            Scheduled_day[]
 
     //where the employee works and or manages
-    location_ID         Int
-    location            Location              @relation("interns", fields: [ID], references: [location_ID])
+    //---------------------------------------------------------
+    works_At            Int                 
+    location            Location              @relation("interns", fields: [works_At], references: [location_ID])
 
 }
 //extension of user roles for interns 
 model Intern{
-    ID                  Int                   @id @map("ID")
-    User                User                  @relation(fields:[ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+    Intern_ID            Int                  @id @map("ID")
+    User                User                  @relation(fields:[Intern_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
 
 }
 
@@ -44,11 +45,13 @@ model Intern{
 model Site_Manager{
     manager_ID          Int                   @id @map("ID")
     User                User                  @relation(fields:[manager_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+   
+   //-----------------------------------------
     managed_site        Location?             @relation("manager", fields: [manager_ID], references: [location_ID])
 }
 
 model Location{
-    location_ID         Int                   @id//location identifier
+    location_ID         Int                   @id @default(autoincrement())//location identifier
     //location information name contact days used and times
     location_name       String                @unique
     address             String                @unique
@@ -64,7 +67,8 @@ model Location{
     interns             User[]                @relation("interns")
     manager             Site_Manager?         @relation("manager")
 
-    site                Scheduled_day[]
+    local_ID            Int                   @unique
+    site                Scheduled_day         @relation(fields: [local_ID], references: [shift_ID])
     }
 
 //1 to many user has many attendances,
@@ -87,14 +91,14 @@ model Attendance{
 
 model Scheduled_day{
     //date and time intern is scheduled to work
-    id                  Int                   @id@unique @default(autoincrement())
+    shift_ID            Int                   @id@unique @default(autoincrement())
     date                DateTime        
     shift_start         Int
     shift_end           Int
 
     //where the intern is scheduled to work
-    site_ID             Int @unique
-    site                Location              @relation(fields: [site_ID], references: [location_ID])
+    //site_ID             Int                   //@unique
+    site                Location?                 //@relation(fields: [site_ID], references: [location_ID])
     
     //type of shift the intern is having
     status              Shift_type            @default(on_site)

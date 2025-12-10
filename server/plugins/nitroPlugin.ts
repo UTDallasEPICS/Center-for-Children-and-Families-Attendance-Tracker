@@ -22,7 +22,7 @@ export default defineNitroPlugin( async (nitroApp) => {
                     date: new Date("2025-01-15T17:00:00Z"),
                     shift_start: 1200,
                     shift_end: 1500,
-                    status: "on_site",
+                    
                     }
             },
 
@@ -36,6 +36,7 @@ export default defineNitroPlugin( async (nitroApp) => {
                     attendance_code: 1555,
                 }
             },
+            location_ID: 1,
         },
     })
     console.log('created user:', user)
