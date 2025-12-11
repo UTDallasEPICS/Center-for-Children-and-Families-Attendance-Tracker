@@ -1,0 +1,12 @@
+# Get all workers
+GET http://localhost:3000/api/localhost:3000/api/interns
+
+# Create worker
+
+POST http://localhost:3000/api/interns/
+Content-Type: application/json
+{
+  "user_name": "Alice",
+  "user_email": "email",
+  "user_phone": "1234567890",
+}
