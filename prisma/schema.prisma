@@ -8,131 +8,130 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-
 }
 
 //USER entity is both site manager and intern
 model User {
-    ID                  Int                   @id @map("ID")                 //uniquely identifiable ID mapped to ID
+  ID String @id @default(uuid()) @map("ID") //uniquely identifiable ID mapped to ID
 
-    //user contact information
-    user_name           String                                 
-    user_email          String                @unique
-    user_phone          String                @unique
+  //user contact information
+  user_name  String
+  user_email String //@unique
+  user_phone String //@unique
 
-    //employee status
-    intern              Intern?
-    site_manager        Site_Manager? 
+  //employee status
+  intern       Intern?
+  site_manager Site_Manager?
 
-    //collection of their attendance history and future scheduled shifts
-    attendance_history  Attendance[]
-    schedule            Scheduled_day[]
+  //collection of their attendance history and future scheduled shifts
+  attendance_history Attendance[]
+  schedule           Scheduled_day[]
 
-    //where the employee works and or manages
-    //---------------------------------------------------------
-    works_At            Int                 
-    location            Location              @relation("interns", fields: [works_At], references: [location_ID])
-
+  //where the employee works and or manages
+  //---------------------------------------------------------
+  works_At String
+  location Location @relation("interns", fields: [works_At], references: [location_ID])
 }
-//extension of user roles for interns 
-model Intern{
-    Intern_ID            Int                  @id @map("ID")
-    User                User                  @relation(fields:[Intern_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
 
+//extension of user roles for interns 
+model Intern {
+  Intern_ID String @id @map("ID")
+  User      User   @relation(fields: [Intern_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
 }
 
 //extension of user roles for Site managers also contains their managed site
-model Site_Manager{
-    manager_ID          Int                   @id @map("ID")
-    User                User                  @relation(fields:[manager_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
-   
-   //-----------------------------------------
-    managed_site        Location?             @relation("manager", fields: [manager_ID], references: [location_ID])
+model Site_Manager {
+  manager_ID String @id @map("ID")
+  User       User   @relation(fields: [manager_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+
+  //-----------------------------------------
+  managed_site Location? @relation("manager", fields: [manager_ID], references: [location_ID])
 }
 
-model Location{
-    location_ID         Int                   @id @default(autoincrement())//location identifier
-    //location information name contact days used and times
-    location_name       String                @unique
-    address             String                @unique
-    operation_days      Work_day
-    open_time           Int    
-    close_time          Int    
-    
-    //generated code to check attendance at a location during a workday
-    attendance_code     Int  
+model Location {
+  location_ID    String   @id @default(uuid()) //location identifier
+  //location information name contact days used and times
+  location_name  String   //@unique
+  address        String   
+  operation_days Work_day
+  open_time      Int
+  close_time     Int
 
-    //list of interns and site manager of specific location
-    userId              Int                   @unique
-    interns             User[]                @relation("interns")
-    manager             Site_Manager?         @relation("manager")
+  //generated code to check attendance at a location during a workday
+  attendance_code Int
 
-    local_ID            Int                   @unique
-    site                Scheduled_day         @relation(fields: [local_ID], references: [shift_ID])
-    }
+  //list of interns and site manager of specific location
+  //userId  String        @unique
+  interns User[]        @relation("interns")
+  manager Site_Manager? @relation("manager")
+
+  site     Scheduled_day[] 
+}
 
 //1 to many user has many attendances,
-model Attendance{
-   id                   Int                   @id @default(autoincrement())   //unique identifier
+model Attendance {
+  id String @id @default(uuid()) //unique identifier
 
-   //clock in time and out time and current attendance status
-   clock_in_time        DateTime
-   clock_out_time       DateTime
-   status               Attendance_status     @default(ABSENT)//defualt being absent
+  //clock in time and out time and current attendance status
+  clock_in_time  DateTime
+  clock_out_time DateTime
+  status         Attendance_status @default(ABSENT) //defualt being absent
 
-   //absence requests including the status, reason(optional), and covering intern(optional)
-   request_status       Leave_request?        @default(PENDING)
-   reason               String?             
+  //absence requests including the status, reason(optional), and covering intern(optional)
+  request_status Leave_request? @default(PENDING)
+  reason         String?
 
-   //id and relationship to the user
-   userID               Int
-   User                 User                  @relation(fields: [userID], references: [ID])
+  //id and relationship to the user
+  userID String
+  User   User   @relation(fields: [userID], references: [ID])
 }
 
-model Scheduled_day{
-    //date and time intern is scheduled to work
-    shift_ID            Int                   @id@unique @default(autoincrement())
-    date                DateTime        
-    shift_start         Int
-    shift_end           Int
+model Scheduled_day {
+  //date and time intern is scheduled to work
+  shift_ID    String   @id @default(uuid())
+  date        DateTime
+  shift_start Int
+  shift_end   Int
 
-    //where the intern is scheduled to work
-    //site_ID             Int                   //@unique
-    site                Location?                 //@relation(fields: [site_ID], references: [location_ID])
-    
-    //type of shift the intern is having
-    status              Shift_type            @default(on_site)
-    
-    //unique id and relationship with user
-    userID              Int
-    User                User                  @relation(fields: [userID], references: [ID])
+  //where the intern is scheduled to work
+  site_ID       String
+  site Location    @relation(fields: [site_ID], references: [location_ID])
 
+  //type of shift the intern is having
+  status Shift_type @default(on_site)
+
+  //unique id and relationship with user
+  userID String
+  User   User   @relation(fields: [userID], references: [ID])
 }
 
 //the below are enums that are used to signify status's
-enum Attendance_status{
-    ABSENT              //If the intern is absent
-    PRESENT             //if the intern is actively present
-    CALLED_OFF          //if the intern had called off in advance   
-    //EXCUSED           //excused abscence doctors note etc
-    COVERING_SHIFT      //for a intern covering a shift of another intern
+enum Attendance_status {
+  ABSENT //If the intern is absent
+  PRESENT //if the intern is actively present
+  CALLED_OFF //if the intern had called off in advance   
+  //EXCUSED           //excused abscence doctors note etc
+  COVERING_SHIFT //for a intern covering a shift of another intern
 }
-enum Leave_request{
-    PENDING
-    ACCEPTED
-    REJECTED
+
+enum Leave_request {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
-enum Shift_type{
-    remote
-    office_hours
-    on_site
+
+enum Shift_type {
+  remote
+  office_hours
+  on_site
 }
-enum Work_day{
-    MONDAY
-    TUESDAY
-    WEDNESDAY
-    THURSDAY
-    FRIDAY
-    SATURDAY
-    SUNDAY
+
+enum Work_day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }
