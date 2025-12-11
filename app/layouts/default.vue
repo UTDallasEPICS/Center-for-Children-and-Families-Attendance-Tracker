@@ -11,6 +11,6 @@
 </template>
 
 <script setup>
-import '../assets/css/main.css'
+// CSS will be imported via nuxt.config.ts
 </script>
 

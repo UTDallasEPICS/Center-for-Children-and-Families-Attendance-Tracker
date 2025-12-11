@@ -49,3 +49,6 @@ Desktop.ini
 *.temp
 .cache/
 
+# Database files
+.data/
+
