@@ -1,45 +1,35 @@
 export default defineEventHandler(async (event) => {
-    const query = getQuery(event);
-        
-    //get all user
-    async function getAll(){
-        return  await prisma.user.findMany({
-            include: {
-                user_name:true,
-                location: true,
-            }
-        });
-    }
-    //find many that is filters by name
-    async function getAllFiltered(name: string){
-        return await prisma.user.findMany({
-            where: {  
-                user_name: {startsWith: name,}
-            },
-            include: {
-                user_name:true,
-                location: true,
-            }
-        });
-    }
 
-    //get specific user based on ID
-    async function findUser(id: string){
-        const user = await prisma.user.findUnique({
-            where: {
-                ID: id,
-            },
-        })
-    }
+  const query = getQuery(event)
 
-    if (query.ID) {
-        return await findUser(query.ID as string)
+  if (query.ID) {
+    const user = await prisma.user.findUnique({
+    where: {
+    ID: query.ID as string
     }
+    })
+    return user
 
-    if (query.name) {
-        return await getAllFiltered(query.name as string)
-    }
+  }
 
-    console.log("this is our ")
-    return await getAll()
+  if (query.user_name) {
+    const user = await prisma.user.findMany({
+      where: {  
+        user_name: {startsWith: query.user_name as string}
+      },
+      include: {
+        location: true,
+      }
+    });
+    console.log("filtered users: ",user )
+    return user
+ }
+
+  const user = await prisma.user.findMany({
+    include: {
+      location: true,
+    },
+  });
+    return user
 })
+
