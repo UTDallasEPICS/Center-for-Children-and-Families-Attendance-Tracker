@@ -5,9 +5,29 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
+
+  runtimeConfig: {
+    redcapApiUrl: process.env.REDCAP_API_URL,
+    redcapApiToken: process.env.REDCAP_API_TOKEN,
+    programStartDate: process.env.PROGRAM_START_DATE,
+    public: {}
+  },
+
+  // Tailwind CSS Vite Plugin
   vite: {
     plugins: [
       tailwindcss(),
     ],
   },
+
+  //Required PostCSS pipeline for Tailwind, nesting, etc.
+  postcss: {
+    plugins: {
+      autoprefixer: {},
+    },
+  },
+
+  components: true,
+
+  modules: [],
 });
