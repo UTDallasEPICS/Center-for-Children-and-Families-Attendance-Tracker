@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   // https://nuxt.com/docs/guide/concepts/typescript
   "files": [],
   "references": [
@@ -16,7 +15,4 @@
       "path": "./.nuxt/tsconfig.node.json"
     }
   ]
-=======
-  "extends": "./.nuxt/tsconfig.json"
->>>>>>> feature/pin-checkin-persistence
 }
