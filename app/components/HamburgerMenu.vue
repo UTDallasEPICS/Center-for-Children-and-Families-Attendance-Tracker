@@ -38,16 +38,6 @@
           <span class="menu-item-text">Attendance Dashboard</span>
           <span v-if="isActiveRoute('/')" class="menu-item-indicator">●</span>
         </NuxtLink>
-        
-        <NuxtLink 
-          to="/participant-checkin"
-          @click="closeMenu"
-          class="menu-item"
-          :class="{ 'active': isActiveRoute('/participant-checkin') }"
-        >
-          <span class="menu-item-text">Participant Check-In</span>
-          <span v-if="isActiveRoute('/participant-checkin')" class="menu-item-indicator">●</span>
-        </NuxtLink>
       </nav>
     </div>
   </div>
