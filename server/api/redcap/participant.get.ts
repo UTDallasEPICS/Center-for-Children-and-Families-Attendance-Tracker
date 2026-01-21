@@ -1,7 +1,3 @@
-// server/api/redcap/participant.get.ts
-import { postToRedcap } from '~/utils/redcap'
-import { getWeekEventName } from '~/utils/week'
-
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const recordId = query.record_id as string | undefined

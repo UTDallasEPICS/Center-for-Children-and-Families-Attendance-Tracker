@@ -1,7 +1,3 @@
-// server/api/redcap/attendance.post.ts
-import { postToRedcap } from '~/utils/redcap'
-import { getWeekEventName } from '~/utils/week'
-
 type AttendanceBody = {
   recordId: string
   childId?: string

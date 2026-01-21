@@ -1,6 +1,3 @@
-import { postToRedcap } from '~/utils/redcap'
-import { getWeekEventName } from '~/utils/week'
-
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const explicitWeek = query.week as string | undefined
