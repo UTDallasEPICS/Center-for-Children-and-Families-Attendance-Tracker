@@ -23,5 +23,6 @@ logs
 .env.*
 !.env.example
 
-# Prisma client
+# Prisma
+dev.db
 app/generated
