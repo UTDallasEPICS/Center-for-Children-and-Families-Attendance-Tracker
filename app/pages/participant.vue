@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import ParticipantCard from '~/components/ParticipantCard.vue'
 
 type Participant = {
   recordId: string

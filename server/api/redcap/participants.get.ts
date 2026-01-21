@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     format: 'json',
     type: 'flat',
     fields: fields.join(','),     // "record_id,id,chname_reg,..."
-    events: eventName,            // filters to current week
+    //events: eventName,            // filters to current week
     rawOrLabel: 'raw',
     rawOrLabelHeaders: 'raw',
     exportSurveyFields: 'false',
