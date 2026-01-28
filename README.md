@@ -42,6 +42,7 @@ You can also just copy it using your editor's tools
 ## 4. Instantiate Database and Prisma Client
 
 ```bash
+npx prisma generate &&
 npx prisma migrate dev
 ```
 
