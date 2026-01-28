@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 /* Custom styles that aren't easily replaceable with Tailwind */
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     padding-top: env(safe-area-inset-top);
