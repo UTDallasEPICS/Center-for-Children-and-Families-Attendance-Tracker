@@ -3,7 +3,7 @@
 ## Prerequisites
 Install the following:
 
-- **Node.js 18 or later**  
+- **Node.js 24 or later**  
   https://nodejs.org/en
 - **Prisma 7 or later**
 - **Git**
