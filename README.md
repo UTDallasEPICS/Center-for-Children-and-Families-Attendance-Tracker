@@ -29,7 +29,17 @@ This installs all Nuxt dependencies and prepares the project for local developme
 
 ---
 
-## 3. Instantiate Database and Prisma Client
+## 3. Copy .env.example to .env
+
+```bash
+cp .env.example .env
+```
+
+You can also just copy it using your editor's tools
+
+---
+
+## 4. Instantiate Database and Prisma Client
 
 ```bash
 npx prisma migrate dev
@@ -39,7 +49,7 @@ This instantiates the prisma client and database
 
 ---
 
-## 4. Start the Development Server
+## 5. Start the Development Server
 
 ```bash
 npm run dev
