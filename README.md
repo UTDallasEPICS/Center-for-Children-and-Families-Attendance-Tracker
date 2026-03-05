@@ -100,12 +100,8 @@ Authentication is not yet connected to a backend identity system.
   Core framework used for building the application.
 - **Vue 3 (Composition API)**  
   Frontend component system.
-- **TypeScript**  
-  Used across the codebase for type safety.
 - **TailwindCSS**  
   Utility-first styling framework.
-- **shadcn-vue components**  
-  Provides reusable UI components such as buttons, inputs, dialogs, and selects.
 - **Vite**  
   Dev server and bundler used by Nuxt for fast HMR.
 
