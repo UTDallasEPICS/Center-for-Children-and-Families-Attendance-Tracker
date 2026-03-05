@@ -1,0 +1,49 @@
+name: Auto-Link and Close Issue
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  link-and-close:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Extract Issue Number
+        id: extract_number
+        run: |
+          # Grabs the issue number from branches like "123-fix-bug"
+          BRANCH_NAME="${{ github.head_ref }}"
+          ISSUE_NUMBER=$(echo "$BRANCH_NAME" | grep -oP '^\d+')
+          
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "No issue number found at the start of $BRANCH_NAME. Skipping."
+            exit 0
+          fi
+          
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Update PR Description
+        if: steps.extract_number.outputs.issue_number != ''
+        run: |
+          ISSUE_REF="#${{ steps.extract_number.outputs.issue_number }}"
+          CLOSE_KEYWORD="Closes $ISSUE_REF"
+          
+          # Get the current PR body
+          CURRENT_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body --template '{{.body}}')
+          
+          # Avoid duplicates: if the issue reference is already there, do nothing
+          if [[ "$CURRENT_BODY" == *"$ISSUE_REF"* ]]; then
+            echo "Issue $ISSUE_REF is already mentioned in the PR body."
+            exit 0
+          fi
+
+          # Construct the new body with the 'Closes' keyword at the top
+          NEW_BODY="$CLOSE_KEYWORD
+
+          $CURRENT_BODY"
+          
+          gh pr edit ${{ github.event.pull_request.number }} --body "$NEW_BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
