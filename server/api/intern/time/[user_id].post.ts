@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
     // Basic endpoint handling and request parameter extraction
     const body = await readBody(event)
 
-    const userID = event.context.params?.userID as string
+    const userID = event.context.params?.user_id as string
     const { check_in_type, check_in_code } = body
 
     // Stores current date for todays check in/check out   
