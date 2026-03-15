@@ -59,7 +59,7 @@ model Location {
   close_time     Int
 
   //generated code to check attendance at a location during a workday
-  attendance_code Int
+  attendance_code String
 
   //list of interns and site manager of specific location
   //userId  String        @unique
@@ -74,8 +74,8 @@ model Attendance {
   id String @id @default(uuid()) //unique identifier
 
   //clock in time and out time and current attendance status
-  clock_in_time  DateTime
-  clock_out_time DateTime
+  clock_in_time  DateTime?
+  clock_out_time DateTime?
   status         Attendance_status @default(ABSENT) //defualt being absent
 
   //absence requests including the status, reason(optional), and covering intern(optional)
