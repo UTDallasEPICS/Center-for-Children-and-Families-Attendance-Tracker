@@ -7,7 +7,10 @@ export default defineEventHandler(async (event) => {
 
     const now = new Date()
 
-    // calculate today's start and end
+    // current hour for shift comparison
+    const currentHour = now.getHours()
+
+    // calculate start and end of today
     const startOfDay = new Date(now)
     startOfDay.setHours(0, 0, 0, 0)
 
@@ -38,16 +41,10 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    // determine which shift matches the current time
-    const activeShift = todaysShifts.find(shift => {
-
-        const shiftStart = new Date(shift.date)
-
-        const shiftEnd = new Date(shift.date)
-        shiftEnd.setMinutes(shiftEnd.getMinutes() + shift.shift_duration)
-
-        return now >= shiftStart && now <= shiftEnd
-    })
+    // find the shift matching current time
+    const activeShift = todaysShifts.find(shift =>
+        currentHour >= shift.shift_start && currentHour <= shift.shift_end
+    )
 
     if (!activeShift) {
 
@@ -59,7 +56,7 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    // verify attendance code for check-in
+    // Verify attendance code
     if (check_in_type) {
 
         if (!check_in_code || check_in_code !== activeShift.site.attendance_code) {
@@ -86,7 +83,7 @@ export default defineEventHandler(async (event) => {
         return attendance
     }
 
-    // checkout logic
+    // CHECKOUT LOGIC
 
     const attendanceRecord = await prisma.attendance.findFirst({
         where: {
