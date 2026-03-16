@@ -7,11 +7,7 @@ export default defineEventHandler(async (event) => {
 
     const now = new Date()
 
-    // current hour and minute for shift comparison
-    const currentHour = now.getHours()
-    const currentMinute = now.getMinutes()
-
-    // calculate start and end of today
+    // calculate today's start and end
     const startOfDay = new Date(now)
     startOfDay.setHours(0, 0, 0, 0)
 
@@ -42,10 +38,16 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    // find the shift matching current time
-    const activeShift = todaysShifts.find(shift =>
-        currentHour >= shift.shift_start && currentHour <= shift.shift_end
-    )
+    // determine which shift matches the current time
+    const activeShift = todaysShifts.find(shift => {
+
+        const shiftStart = new Date(shift.date)
+
+        const shiftEnd = new Date(shift.date)
+        shiftEnd.setMinutes(shiftEnd.getMinutes() + shift.shift_duration)
+
+        return now >= shiftStart && now <= shiftEnd
+    })
 
     if (!activeShift) {
 
@@ -57,24 +59,7 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    // Prevent clock-in more than 10 minutes before shift start
-    if (check_in_type) {
-
-        const shiftStartHour = activeShift.shift_start
-        const minutesUntilShift = (shiftStartHour - currentHour) * 60 - currentMinute
-
-        if (minutesUntilShift > 10) {
-
-            console.error("User attempted to check in too early:", userID)
-
-            throw createError({
-                statusCode: 400,
-                statusMessage: "Cannot check in more than 10 minutes before shift start"
-            })
-        }
-    }
-
-    // Verify attendance code
+    // verify attendance code for check-in
     if (check_in_type) {
 
         if (!check_in_code || check_in_code !== activeShift.site.attendance_code) {
@@ -101,7 +86,7 @@ export default defineEventHandler(async (event) => {
         return attendance
     }
 
-    // CHECKOUT LOGIC
+    // checkout logic
 
     const attendanceRecord = await prisma.attendance.findFirst({
         where: {
