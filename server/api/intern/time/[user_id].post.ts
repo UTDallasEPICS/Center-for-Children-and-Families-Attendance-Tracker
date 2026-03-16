@@ -1,55 +1,76 @@
 export default defineEventHandler(async (event) => {
-    // Basic endpoint handling and request parameter extraction
+
     const body = await readBody(event)
 
     const userID = event.context.params?.user_id as string
+
     const { check_in_type, check_in_code } = body
 
-    // Stores current date for todays check in/check out   
+    // Get current time
     const now = new Date()
 
-    // Find the latest attendance record for user by sorting clock in times in descending order
-    let todayAttendance = await prisma.attendance.findFirst({
+    // Calculate start and end of today
+    const startOfDay = new Date(now)
+    startOfDay.setHours(0, 0, 0, 0)
+
+    const endOfDay = new Date(now)
+    endOfDay.setHours(23, 59, 59, 999)
+
+    // Find the user and their location
+    const user = await prisma.user.findUnique({
+        where: { ID: userID },
+        include: { location: true }
+    })
+
+    if (!user) {
+
+        console.error("User not found:", userID)
+
+        throw createError({
+            statusCode: 404,
+            statusMessage: "User not found"
+        })
+    }
+
+    // Verify attendance code during check-in
+    if (check_in_type) {
+
+        if (!check_in_code || check_in_code !== user.location.attendance_code) {
+
+            console.error("Invalid attendance code for user:", userID)
+
+            throw createError({
+                statusCode: 403,
+                statusMessage: "Invalid attendance code"
+            })
+        }
+    }
+
+    // Find today's attendance record
+    const todayAttendance = await prisma.attendance.findFirst({
         where: {
-            userID: userID
-        },
-        orderBy: {
-            clock_in_time: 'desc'
+            userID: userID,
+            clock_in_time: {
+                gte: startOfDay,
+                lte: endOfDay
+            }
         }
     })
 
-    // If no attendance record exists create one (new user)
     if (!todayAttendance) {
 
-        // If user has no record and teempts to check out (meaning they never checked in) error
-        if (!check_in_type) {
-            console.error("Checkout attempted before first check-in for user:", userID)
-            
-            throw createError({
-                statusCode: 400,
-                statusMessage: "Cannot check out before checking in"
-            })
-        }
+        console.error("No attendance record found for today for user:", userID)
 
-        // Create a new attendance record for new user 
-        const newAttendance = await prisma.attendance.create({
-            data: {
-                userID: userID,
-                clock_in_time: now,
-                status: "PRESENT"
-            }
+        throw createError({
+            statusCode: 404,
+            statusMessage: "Attendance record for today not found"
         })
-
-        // Log creation of new user
-        console.log("New attendance record created for user:", userID)
-
-        return newAttendance
     }
 
-    // Prevent checkout before checkin
+    // Prevent checkout before check-in
     if (!check_in_type && !todayAttendance.clock_in_time) {
 
-        console.error("Checkout attempted before checkin for user:", userID)
+        console.error("Checkout attempted before check-in for user:", userID)
 
         throw createError({
             statusCode: 400,
@@ -57,24 +78,28 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    // Update database
+    // Determine what field to update
     let updateData: any = {}
-  
+
     if (check_in_type) {
+
         updateData.clock_in_time = now
+        updateData.status = "PRESENT"
+
     } else {
+
         updateData.clock_out_time = now
+
     }
 
-    // Updates existing records with new timings, makes sure to keep previous records
+    // Update attendance record
     const attendance = await prisma.attendance.update({
-        where: {
-            id: todayAttendance.id
-        },
+        where: { id: todayAttendance.id },
         data: updateData
     })
 
-    console.log("Attendance updated for user:", userID)
+    console.log("Attendance updated successfully for user:", userID)
 
     return attendance
+
 })
