@@ -7,42 +7,18 @@ export default defineEventHandler(async (event) => {
 
     const now = new Date()
 
-    // calculate today's start and end
-    const startOfDay = new Date(now)
-    startOfDay.setHours(0, 0, 0, 0)
-
-    const endOfDay = new Date(now)
-    endOfDay.setHours(23, 59, 59, 999)
-
-    const startTimestamp = startOfDay.getTime()
-    const endTimestamp = endOfDay.getTime()
-
-    // find today's scheduled shifts
-    const todaysShifts = await prisma.scheduled_day.findMany({
+    // Get all shifts for user
+    const shifts = await prisma.scheduled_day.findMany({
         where: {
-            userID: userID,
-            date: {
-                gte: startOfDay,
-                lte: endOfDay
-            }
+            userID: userID
         },
         include: {
             site: true
         }
     })
 
-    if (todaysShifts.length === 0) {
-
-        console.error("No scheduled shift found for today for user:", userID)
-
-        throw createError({
-            statusCode: 404,
-            statusMessage: "No scheduled shift for today"
-        })
-    }
-
-    // determine which shift matches the current time
-    const activeShift = todaysShifts.find(shift => {
+    // Find active shift
+    const activeShift = shifts.find(shift => {
 
         const shiftStart = new Date(shift.date)
 
@@ -54,15 +30,15 @@ export default defineEventHandler(async (event) => {
 
     if (!activeShift) {
 
-        console.error("Current time does not fall within any scheduled shift for user:", userID)
+        console.error("No active shift found for user:", userID)
 
         throw createError({
-            statusCode: 400,
-            statusMessage: "User is not scheduled to work at this time"
+            statusCode: 404,
+            statusMessage: "No active shift at this time"
         })
     }
 
-    // verify attendance code
+    // CHECK-IN
     if (check_in_type) {
 
         if (!check_in_code || check_in_code !== activeShift.site.attendance_code) {
@@ -75,7 +51,6 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        // create attendance record
         const attendance = await prisma.attendance.create({
             data: {
                 userID: userID,
@@ -89,15 +64,13 @@ export default defineEventHandler(async (event) => {
         return attendance
     }
 
-    // checkout logic
-
+    // CHECK-OUT
     const attendanceRecord = await prisma.attendance.findFirst({
         where: {
-            userID: userID,
-            clock_in_time: {
-                gte: startOfDay,
-                lte: endOfDay
-            }
+            userID: userID
+        },
+        orderBy: {
+            clock_in_time: "desc"
         }
     })
 
