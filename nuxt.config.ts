@@ -4,6 +4,10 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineNuxtConfig({
     compatibilityDate: "2025-07-15",
 
+    alias: {
+        '@app-types': '.types'
+    },
+
     runtimeConfig: {
         redcapApiToken: process.env.REDCAP_API_TOKEN,
         programStartDate: process.env.PROGRAM_START_DATE,
