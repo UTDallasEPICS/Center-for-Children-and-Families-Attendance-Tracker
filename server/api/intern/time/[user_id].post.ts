@@ -5,9 +5,9 @@ export default defineEventHandler(async (event) => {
     const userID = event.context.params?.user_id as string
     const { check_in_type, check_in_code } = body
 
-    const now = new Date()
+    const now = new Date() // RFC 3339 compliant (UTC internally)
 
-    // Get all shifts for user
+    // Get all scheduled shifts for user
     const shifts = await prisma.scheduled_day.findMany({
         where: {
             userID: userID
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    // Find active shift
+    // Find active shift (based on current time)
     const activeShift = shifts.find(shift => {
 
         const shiftStart = new Date(shift.date)
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
 
     if (!activeShift) {
 
-        console.error("No active shift found for user:", userID)
+        console.error("No active shift found for user:", userID, "at", now.toISOString())
 
         throw createError({
             statusCode: 404,
@@ -41,6 +41,7 @@ export default defineEventHandler(async (event) => {
     // CHECK-IN
     if (check_in_type) {
 
+        // Validate attendance code
         if (!check_in_code || check_in_code !== activeShift.site.attendance_code) {
 
             console.error("Invalid attendance code for user:", userID)
@@ -54,12 +55,12 @@ export default defineEventHandler(async (event) => {
         const attendance = await prisma.attendance.create({
             data: {
                 userID: userID,
-                clock_in_time: now,
+                clock_in_time: now, // stored as RFC 3339
                 status: "PRESENT"
             }
         })
 
-        console.log("User checked in:", userID)
+        console.log("User checked in:", userID, now.toISOString())
 
         return attendance
     }
@@ -93,7 +94,7 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    console.log("User checked out:", userID)
+    console.log("User checked out:", userID, now.toISOString())
 
     return updatedAttendance
 })
