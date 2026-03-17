@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     const userID = event.context.params?.user_id as string
     const { check_in_type, check_in_code } = body
 
-    const now = new Date() // RFC 3339 compliant (UTC internally)
+    const now = new Date() 
 
     // Get all scheduled shifts for user
     const shifts = await prisma.scheduled_day.findMany({
@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
         const attendance = await prisma.attendance.create({
             data: {
                 userID: userID,
-                clock_in_time: now, // stored as RFC 3339
+                clock_in_time: now, 
                 status: "PRESENT"
             }
         })
