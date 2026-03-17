@@ -14,6 +14,9 @@ export default defineEventHandler(async (event) => {
     const endOfDay = new Date(now)
     endOfDay.setHours(23, 59, 59, 999)
 
+    const startTimestamp = startOfDay.getTime()
+    const endTimestamp = endOfDay.getTime()
+
     // find today's scheduled shifts
     const todaysShifts = await prisma.scheduled_day.findMany({
         where: {
