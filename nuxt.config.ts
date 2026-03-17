@@ -5,7 +5,7 @@ export default defineNuxtConfig({
     compatibilityDate: "2025-07-15",
 
     alias: {
-        '@app-types': '.types'
+        '@app-types': './types'
     },
 
     runtimeConfig: {
