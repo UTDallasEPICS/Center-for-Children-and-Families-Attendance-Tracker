@@ -1,10 +1,18 @@
-import { defineEventHandler } from 'h3'
-
 export default defineEventHandler(async (event) => {
 
-    const userID = event.context.params?.user_id || event.context.params?.userId as string
+    const userID = event.context.params?.user_id as string
 
     const now = new Date()
+
+    // Custom types 
+    type Shift = {
+        datetime: string
+        site: string
+        attendance_status: string | null
+    }
+
+    const previous_shifts: Shift[] = []
+    const future_shifts: Shift[] = []
 
     const schedules = await prisma.scheduled_day.findMany({
         where: {
@@ -23,9 +31,6 @@ export default defineEventHandler(async (event) => {
             userID: userID
         }
     })
-
-    const previous_shifts: any[] = []
-    const future_shifts: any[] = []
 
     schedules.forEach(shift => {
 
@@ -49,7 +54,7 @@ export default defineEventHandler(async (event) => {
             attendance_status = attendance.status.toLowerCase()
         }
 
-        const shiftData = {
+        const shiftData: Shift = {
             datetime: shiftDate.toISOString(),
             site: shift.site_ID,
             attendance_status
