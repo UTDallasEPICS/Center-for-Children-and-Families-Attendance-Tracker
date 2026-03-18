@@ -3,13 +3,11 @@ export default defineEventHandler(async (event) => {
     // Get userID from route param
     const userID = event.context.params?.user_id as string
 
-    const now = new Date()
-
     // Start and end of today 
-    const startOfDay = new Date(now)
+    const startOfDay = new Date()
     startOfDay.setHours(0, 0, 0, 0)
 
-    const endOfDay = new Date(now)
+    const endOfDay = new Date()
     endOfDay.setHours(23, 59, 59, 999)
 
     // Find today's attendance record

@@ -1,10 +1,10 @@
-export default defineEventHandler(async (event) => {
-
+export default defineEventHandler(async (event) => { //Got rid of defineEventHandler import
+    // Removed parameter checking
     const userID = event.context.params?.user_id as string
 
     const now = new Date()
 
-    // Custom types 
+    // Custom types
     type Shift = {
         datetime: string
         site: string
