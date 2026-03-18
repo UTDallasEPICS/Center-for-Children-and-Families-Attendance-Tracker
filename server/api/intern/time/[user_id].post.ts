@@ -5,96 +5,115 @@ export default defineEventHandler(async (event) => {
     const userID = event.context.params?.user_id as string
     const { check_in_type, check_in_code } = body
 
-    const now = new Date() 
+    const now = new Date()
 
-    // Get all scheduled shifts for user
-    const shifts = await prisma.scheduled_day.findMany({
+    // Find active shift 
+    const potentialShift = await prisma.scheduled_day.findFirst({
         where: {
-            userID: userID
+            userID: userID,
+            date: {
+                lte: now
+            }
+        },
+        orderBy: {
+            date: "desc"
         },
         include: {
             site: true
         }
     })
 
-    // Find active shift (based on current time)
-    const activeShift = shifts.find(shift => {
+    let activeShift = null
 
-        const shiftStart = new Date(shift.date)
+    if (potentialShift) {
+        const shiftStart = new Date(Number(potentialShift.date))
 
-        const shiftEnd = new Date(shift.date)
-        shiftEnd.setMinutes(shiftEnd.getMinutes() + shift.shift_duration)
+        const shiftEnd = new Date(potentialShift.date)
+        shiftEnd.setMinutes(shiftEnd.getMinutes() + potentialShift.shift_duration)
 
-        return now >= shiftStart && now <= shiftEnd
-    })
+        if (now >= shiftStart && now <= shiftEnd) {
+            activeShift = potentialShift
+        }
+    }
 
+    // If no valid shift found
     if (!activeShift) {
-
-        console.error("No active shift found for user:", userID, "at", now.toISOString())
-
         throw createError({
             statusCode: 404,
-            statusMessage: "No active shift at this time"
+            statusMessage: "No active shift found"
         })
     }
 
-    // CHECK-IN
-    if (check_in_type) {
-
-        // Validate attendance code
-        if (!check_in_code || check_in_code !== activeShift.site.attendance_code) {
-
-            console.error("Invalid attendance code for user:", userID)
-
-            throw createError({
-                statusCode: 403,
-                statusMessage: "Invalid attendance code"
-            })
-        }
-
-        const attendance = await prisma.attendance.create({
-            data: {
-                userID: userID,
-                clock_in_time: now, 
-                status: "PRESENT"
-            }
+    // Validate attendance code
+    if (check_in_type && activeShift.site.attendance_code !== check_in_code) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: "Invalid attendance code"
         })
-
-        console.log("User checked in:", userID, now.toISOString())
-
-        return attendance
     }
 
-    // CHECK-OUT
-    const attendanceRecord = await prisma.attendance.findFirst({
+    // Find today's attendance record
+    const startOfDay = new Date()
+    startOfDay.setHours(0, 0, 0, 0)
+
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999)
+
+    let attendance = await prisma.attendance.findFirst({
         where: {
-            userID: userID
+            userID: userID,
+            clock_in_time: {
+                gte: startOfDay,
+                lte: endOfDay
+            }
         },
         orderBy: {
             clock_in_time: "desc"
         }
     })
 
-    if (!attendanceRecord) {
+    // CHECK-IN
+    if (check_in_type) {
 
-        console.error("Checkout attempted without check-in for user:", userID)
+        if (!attendance) {
+            attendance = await prisma.attendance.create({
+                data: {
+                    userID: userID,
+                    clock_in_time: now,
+                    status: "PRESENT"
+                }
+            })
+        } else {
+            attendance = await prisma.attendance.update({
+                where: {
+                    id: attendance.id
+                },
+                data: {
+                    clock_in_time: now
+                }
+            })
+        }
+    }
 
-        throw createError({
-            statusCode: 400,
-            statusMessage: "Cannot check out before checking in"
+    // CHECK-OUT
+    else {
+
+        if (!attendance || !attendance.clock_in_time) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "Cannot check out before checking in"
+            })
+        }
+
+        attendance = await prisma.attendance.update({
+            where: {
+                id: attendance.id
+            },
+            data: {
+                clock_out_time: now
+            }
         })
     }
 
-    const updatedAttendance = await prisma.attendance.update({
-        where: {
-            id: attendanceRecord.id
-        },
-        data: {
-            clock_out_time: now
-        }
-    })
-
-    console.log("User checked out:", userID, now.toISOString())
-
-    return updatedAttendance
+    return attendance
 })
