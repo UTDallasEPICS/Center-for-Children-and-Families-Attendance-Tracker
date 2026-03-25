@@ -1,10 +1,9 @@
-export default defineEventHandler(async (event) => { //Got rid of defineEventHandler import
-    // Removed parameter checking
+export default defineEventHandler(async (event) => {
+
     const userID = event.context.params?.user_id as string
 
     const now = new Date()
 
-    // Custom types
     type Shift = {
         datetime: string
         site: string
@@ -32,20 +31,20 @@ export default defineEventHandler(async (event) => { //Got rid of defineEventHan
         }
     })
 
-    schedules.forEach(shift => {
+    schedules.forEach((shift: any) => {
 
         const shiftDate = new Date(shift.date)
 
-        const attendance = attendanceRecords.find(record => {
+        const shiftStart = new Date(shift.date)
+        const shiftEnd = new Date(shift.date)
+        shiftEnd.setMinutes(shiftEnd.getMinutes() + shift.shift_duration)
+
+        const attendance = attendanceRecords.find((record: any) => {
             if (!record.clock_in_time) return false
 
-            const recordDate = new Date(record.clock_in_time)
+            const recordTime = new Date(record.clock_in_time)
 
-            return (
-                recordDate.getFullYear() === shiftDate.getFullYear() &&
-                recordDate.getMonth() === shiftDate.getMonth() &&
-                recordDate.getDate() === shiftDate.getDate()
-            )
+            return recordTime >= shiftStart && recordTime <= shiftEnd
         })
 
         let attendance_status: string | null = null
