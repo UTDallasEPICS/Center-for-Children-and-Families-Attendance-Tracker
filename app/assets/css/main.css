@@ -20,6 +20,11 @@
   --color-success: #00A63E;
 }
 
+/* Optical correction for inline label text next to icons/buttons */
+@utility label-optical {
+  transform: translateY(1px);
+}
+
 /* Custom styles that aren't easily replaceable with Tailwind */
 html,
 body {
