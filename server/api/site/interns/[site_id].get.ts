@@ -12,9 +12,6 @@ export default defineEventHandler(async (event) => {
     const interns = await prisma.user.findMany({
         where: {
             works_At: site_id,
-            intern: {
-                isNot: null // User is actually an intern
-            }
         },
         select: {
             ID: true,
