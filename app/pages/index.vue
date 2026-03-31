@@ -60,5 +60,6 @@ const handleCheckInPin = (pin: string) => {
   }
   showCheckInPinModal.value = false
 }
+
 </script>
 
