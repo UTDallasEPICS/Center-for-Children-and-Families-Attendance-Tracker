@@ -8,15 +8,9 @@ export default defineEventHandler(async (event) => {
     const now = new Date()
 
     // Find active shift 
-    const potentialShift = await prisma.scheduled_day.findFirst({
+    const shifts = await prisma.scheduled_day.findMany({
         where: {
-            userID: userID,
-            date: {
-                lte: now
-            }
-        },
-        orderBy: {
-            date: "desc"
+            userID: userID
         },
         include: {
             site: true
@@ -25,14 +19,15 @@ export default defineEventHandler(async (event) => {
 
     let activeShift = null
 
-    if (potentialShift) {
-        const shiftStart = new Date(potentialShift.date)
+    for (const shift of shifts) {
+        const shiftStart = new Date(shift.date)
 
-        const shiftEnd = new Date(potentialShift.date)
-        shiftEnd.setMinutes(shiftEnd.getMinutes() + potentialShift.shift_duration)
+        const shiftEnd = new Date(shift.date)
+        shiftEnd.setMinutes(shiftEnd.getMinutes() + shift.shift_duration)
 
         if (now >= shiftStart && now <= shiftEnd) {
-            activeShift = potentialShift
+            activeShift = shift
+            break
         }
     }
 
@@ -52,19 +47,18 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    // Find today's attendance record
-    const startOfDay = new Date()
-    startOfDay.setHours(0, 0, 0, 0)
+    // Find attendance record for THIS SHIFT (FIXED)
+    const shiftStart = new Date(activeShift.date)
 
-    const endOfDay = new Date()
-    endOfDay.setHours(23, 59, 59, 999)
+    const shiftEnd = new Date(activeShift.date)
+    shiftEnd.setMinutes(shiftEnd.getMinutes() + activeShift.shift_duration)
 
     let attendance = await prisma.attendance.findFirst({
         where: {
             userID: userID,
             clock_in_time: {
-                gte: startOfDay,
-                lte: endOfDay
+                gte: shiftStart,
+                lte: shiftEnd
             }
         },
         orderBy: {
