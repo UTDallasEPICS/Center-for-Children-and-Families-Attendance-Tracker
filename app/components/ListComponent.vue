@@ -1,197 +1,203 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ListItem } from '../types/list.types'
 
-const props = withDefaults(defineProps<{
+interface ListItemAction {
+  onClick?: (item: ListItem) => void
+  href?: string
+  target?: string
+}
+
+interface ListItem {
+  id: string | number
+  label: string
+  sublabel?: string
+  initials?: string
+  avatarUrl?: string
+  status?: 'green' | 'orange' | 'grey'
+  badge?: { label: string | number; variant?: string }
+  action?: ListItemAction
+}
+
+interface ListGroup {
+  title: string
   items: ListItem[]
+}
+
+const props = defineProps<{
+  groups?: ListGroup[]
+  items?: ListItem[]
   emptyMessage?: string
   ariaLabel?: string
-}>(), {
-  emptyMessage: 'No items to display.',
-  ariaLabel: 'List',
-})
+}>()
 
 const emit = defineEmits<{
   (e: 'item-click', item: ListItem): void
 }>()
 
-const isEmpty = computed(() => props.items.length === 0)
+const isEmpty = computed(() => {
+  if (props.groups) return props.groups.every(g => g.items.length === 0)
+  return !props.items || props.items.length === 0
+})
 
 function handleClick(item: ListItem) {
   if (!item.action) return
-  item.action.onClick?.(item)
+  if (item.action.onClick) {
+    item.action.onClick(item)
+  }
   emit('item-click', item)
 }
 
-function badgeClass(variant: string = 'default') {
-  const variants: Record<string, string> = {
-    default: 'badge--default',
-    success: 'badge--success',
-    warning: 'badge--warning',
-    danger: 'badge--danger',
-    info: 'badge--info',
-  }
-  return variants[variant] ?? variants.default
+function getStatusDotClass(status: string) {
+  if (status === 'green') return 'bg-green-500'
+  if (status === 'orange') return 'bg-orange-400'
+  return 'bg-slate-300'
+}
+
+function getBadgeClass(variant: string) {
+  if (variant === 'success') return 'bg-green-100 text-green-700'
+  if (variant === 'warning') return 'bg-yellow-100 text-yellow-700'
+  if (variant === 'danger') return 'bg-red-100 text-red-600'
+  if (variant === 'info') return 'bg-blue-100 text-blue-700'
+  return 'bg-slate-200 text-slate-600'
 }
 </script>
 
 <template>
-  <div class="base-list" :aria-label="ariaLabel" role="list">
+  <div
+    class="flex flex-col w-full border border-slate-200 rounded-lg bg-white overflow-hidden"
+    :aria-label="ariaLabel"
+    role="list"
+  >
 
-    <div v-if="isEmpty" class="base-list__empty" role="listitem">
+    <div v-if="isEmpty" class="py-8 px-4 text-center text-sm text-slate-500" role="listitem">
       <slot name="empty">
-        <span>{{ emptyMessage }}</span>
+        <span>{{ emptyMessage || 'No items to display.' }}</span>
       </slot>
     </div>
 
     <template v-else>
-      <component
-        v-for="item in items"
-        :key="item.id"
-        :is="item.action?.href ? 'a' : 'div'"
-        :href="item.action?.href"
-        :target="item.action?.target"
-        :rel="item.action?.target === '_blank' ? 'noopener noreferrer' : undefined"
-        class="base-list__item"
-        :class="{ 'base-list__item--interactive': !!item.action }"
-        role="listitem"
-        :tabindex="item.action ? 0 : undefined"
-        @click="handleClick(item)"
-        @keydown.enter="handleClick(item)"
-        @keydown.space.prevent="handleClick(item)"
-      >
-        <slot name="icon" :item="item">
-          <span v-if="item.icon" class="base-list__icon">{{ item.icon }}</span>
-        </slot>
 
-        <div class="base-list__body">
-          <slot name="label" :item="item">
-            <span class="base-list__label">{{ item.label }}</span>
-          </slot>
-          <slot name="sublabel" :item="item">
-            <span v-if="item.sublabel" class="base-list__sublabel">{{ item.sublabel }}</span>
-          </slot>
+      <template v-if="groups">
+        <div v-for="group in groups" :key="group.title">
+
+          <div class="px-4 py-2 text-xs font-semibold tracking-widest text-slate-400 uppercase">
+            {{ group.title }} {{ group.items.length }}
+          </div>
+
+          <component
+            v-for="item in group.items"
+            :key="item.id"
+            :is="item.action?.href ? 'a' : 'div'"
+            :href="item.action?.href"
+            :target="item.action?.target"
+            :rel="item.action?.target === '_blank' ? 'noopener noreferrer' : undefined"
+            class="flex items-center gap-3 px-4 py-3 border-b border-slate-100 no-underline text-inherit outline-none transition-colors duration-150"
+            :class="item.action ? 'cursor-pointer hover:bg-slate-50' : ''"
+            role="listitem"
+            :tabindex="item.action ? 0 : undefined"
+            @click="handleClick(item)"
+            @keydown.enter="handleClick(item)"
+            @keydown.space.prevent="handleClick(item)"
+          >
+
+            <slot name="icon" :item="item">
+              <div class="relative shrink-0">
+                <div class="w-11 h-11 rounded-full bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600 overflow-hidden">
+                  <img v-if="item.avatarUrl" :src="item.avatarUrl" class="w-full h-full object-cover" />
+                  <span v-else>{{ item.initials }}</span>
+                </div>
+                <span
+                  v-if="item.status"
+                  class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
+                  :class="getStatusDotClass(item.status)"
+                ></span>
+              </div>
+            </slot>
+
+            <div class="flex flex-col flex-1 min-w-0">
+              <slot name="label" :item="item">
+                <span class="text-sm font-medium text-slate-900 truncate">{{ item.label }}</span>
+              </slot>
+              <slot name="sublabel" :item="item">
+                <span v-if="item.sublabel" class="text-xs text-slate-500 truncate">{{ item.sublabel }}</span>
+              </slot>
+            </div>
+
+            <div class="shrink-0 flex items-center gap-2">
+              <slot name="badge" :item="item">
+                <span
+                  v-if="item.badge"
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
+                  :class="getBadgeClass(item.badge.variant || 'default')"
+                >
+                  {{ item.badge.label }}
+                </span>
+              </slot>
+              <slot name="trailing" :item="item" />
+            </div>
+
+          </component>
+
         </div>
+      </template>
 
-        <div class="base-list__trailing">
-          <slot name="badge" :item="item">
-            <span v-if="item.badge" class="base-list__badge" :class="badgeClass(item.badge.variant)">
-              {{ item.badge.label }}
-            </span>
+      <template v-else>
+        <component
+          v-for="item in items"
+          :key="item.id"
+          :is="item.action?.href ? 'a' : 'div'"
+          :href="item.action?.href"
+          :target="item.action?.target"
+          :rel="item.action?.target === '_blank' ? 'noopener noreferrer' : undefined"
+          class="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 no-underline text-inherit outline-none transition-colors duration-150"
+          :class="item.action ? 'cursor-pointer hover:bg-slate-50' : ''"
+          role="listitem"
+          :tabindex="item.action ? 0 : undefined"
+          @click="handleClick(item)"
+          @keydown.enter="handleClick(item)"
+          @keydown.space.prevent="handleClick(item)"
+        >
+
+          <slot name="icon" :item="item">
+            <div class="relative shrink-0">
+              <div class="w-11 h-11 rounded-full bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600 overflow-hidden">
+                <img v-if="item.avatarUrl" :src="item.avatarUrl" class="w-full h-full object-cover" />
+                <span v-else>{{ item.initials }}</span>
+              </div>
+              <span
+                v-if="item.status"
+                class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
+                :class="getStatusDotClass(item.status)"
+              ></span>
+            </div>
           </slot>
-          <slot name="trailing" :item="item" />
-        </div>
 
-      </component>
+          <div class="flex flex-col flex-1 min-w-0">
+            <slot name="label" :item="item">
+              <span class="text-sm font-medium text-slate-900 truncate">{{ item.label }}</span>
+            </slot>
+            <slot name="sublabel" :item="item">
+              <span v-if="item.sublabel" class="text-xs text-slate-500 truncate">{{ item.sublabel }}</span>
+            </slot>
+          </div>
+
+          <div class="shrink-0 flex items-center gap-2">
+            <slot name="badge" :item="item">
+              <span
+                v-if="item.badge"
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
+                :class="getBadgeClass(item.badge.variant || 'default')"
+              >
+                {{ item.badge.label }}
+              </span>
+            </slot>
+            <slot name="trailing" :item="item" />
+          </div>
+
+        </component>
+      </template>
+
     </template>
 
   </div>
 </template>
-
-<style scoped>
-.base-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border: 1px solid var(--list-border-color, #e2e8f0);
-  border-radius: var(--list-border-radius, 8px);
-  background: var(--list-bg, #ffffff);
-  overflow: hidden;
-}
-
-.base-list__item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--list-border-color, #e2e8f0);
-  text-decoration: none;
-  color: inherit;
-  background: transparent;
-  transition: background 0.15s ease;
-  outline: none;
-}
-
-.base-list__item:last-child {
-  border-bottom: none;
-}
-
-.base-list__item--interactive {
-  cursor: pointer;
-}
-
-.base-list__item--interactive:hover,
-.base-list__item--interactive:focus-visible {
-  background: var(--list-item-hover-bg, #f8fafc);
-}
-
-.base-list__item--interactive:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--list-focus-color, #3b82f6);
-}
-
-.base-list__icon {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  border-radius: 50%;
-  background: var(--list-icon-bg, #f1f5f9);
-}
-
-.base-list__body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.base-list__label {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--list-label-color, #0f172a);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.base-list__sublabel {
-  font-size: 0.8125rem;
-  color: var(--list-sublabel-color, #64748b);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.base-list__trailing {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.base-list__badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badge--default { background: #e2e8f0; color: #475569; }
-.badge--success { background: #dcfce7; color: #16a34a; }
-.badge--warning { background: #fef9c3; color: #ca8a04; }
-.badge--danger  { background: #fee2e2; color: #dc2626; }
-.badge--info    { background: #dbeafe; color: #2563eb; }
-
-.base-list__empty {
-  padding: 32px 16px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--list-sublabel-color, #64748b);
-}
-</style>
