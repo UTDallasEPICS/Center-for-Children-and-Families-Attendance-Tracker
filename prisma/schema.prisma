@@ -48,6 +48,7 @@ model Location {
 
   attendance_code   String
   code_generated_at DateTime?
+  code_expiry_min   Int @default(60)
 
   site              Scheduled_day[]
   site_managers     Site_Manager[]  @relation("ManagerLocation")
