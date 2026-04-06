@@ -120,17 +120,6 @@ Retrieves all interns assigned to a specific site and returns only relevant info
 
 ---
 
-### POST - /api/site/code/[site_id]
-**Content Type:** None  
-**Response Type:** text/plain  
-
-**Body:** None  
-
-**Description:**  
-Generates a random daily attendance code for the specified site and assigns it to that site for the current day. The code is stored in `Location.attendance_code`.
-
----
-
 ### GET - /api/site/code/[site_id]
 **Content Type:** None  
 **Response Type:** text/plain  
@@ -138,7 +127,7 @@ Generates a random daily attendance code for the specified site and assigns it t
 **Body:** None  
 
 **Description:**  
-Retrieves the daily attendance code for the specified site after it has been generated. The value may also be cached.
+Retrieves the daily attendance code for the specified site, if it doesn't exist then it will generate it
 
 ---
 
