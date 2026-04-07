@@ -34,5 +34,11 @@ export default defineNuxtConfig({
 
     components: true,
 
-    modules: ["@nuxt/eslint"],
+    modules: ["@nuxt/eslint", "@nuxt/fonts"],
+
+    fonts: {
+        families: [
+            { name: "Roboto", weights: [400, 500] },
+        ],
+    },
 })
