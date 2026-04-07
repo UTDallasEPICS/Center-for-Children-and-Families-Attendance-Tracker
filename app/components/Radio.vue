@@ -45,7 +45,6 @@
 </script>
 
 <script setup lang="ts">
-  import { inject, computed } from "vue"
   import { RADIO_GROUP_KEY } from "./RadioGroup.vue"
 
   const props = defineProps<{

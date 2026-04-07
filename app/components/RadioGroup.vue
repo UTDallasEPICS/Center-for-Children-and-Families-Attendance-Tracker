@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-  import { provide, toRef, computed, readonly } from "vue"
 
   const props = defineProps<{
     modelValue: string | number
@@ -35,7 +34,7 @@
   provide(RADIO_GROUP_KEY, {
     modelValue: readonly(toRef(props, "modelValue")),
     name: readonly(toRef(props, "name")),
-    groupDisabled: readonly(computed(() => props.disabled ?? false)),
+    groupDisabled: computed(() => props.disabled ?? false),
     onChange: (value) => emit("update:modelValue", value),
   })
 </script>
