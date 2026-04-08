@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Roboto", sans-serif;
+  
+  /* Brand */
+  --color-brand-orange: #E87500;
+  --color-brand-green: #154734;
+
+  /* Text */
+  --color-text-main: #171717;
+  --color-text-sub-dark: #525252;
+  --color-text-sub-light: #737373;
+  --color-text-disabled: #A1A1A1;
+
+  /* Semantic */
+  --color-error: #E7000B;
+  --color-warning: #E17100;
+  --color-success: #00A63E;
+}
+
+/* Optical correction for inline label text next to icons/buttons */
+@utility label-optical {
+  transform: translateY(1px);
+}
