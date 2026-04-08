@@ -36,5 +36,6 @@ export default defineNuxtConfig({
 
   components: true,
 
-  modules: [],
+  modules: ['@nuxt/ui'],
+
 });
