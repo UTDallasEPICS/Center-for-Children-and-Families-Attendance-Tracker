@@ -1,115 +1,108 @@
 generator client {
-  provider   = "prisma-client"
-  output     = "../app/generated/prisma"
-  engineType = "client"
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
 }
 
-model User {
-  ID                 String          @id @default(uuid()) @map("ID")
-  user_name          String
-  user_email         String
-  user_phone         String
-  works_At           String
+
+// Renamed User to Intern
+model Intern {
+  ID            String   @id @default(uuid())
+  user_name     String
+  user_email    String   @unique
+  user_phone    String?
+
+  // Removed works_At and location
+
+  // Next upcoming shift pointer
+  next_shift_ID String?
+  next_shift    Scheduled_day? @relation("next_shift", fields: [next_shift_ID], references: [shift_ID])
+
+  // Optional Site Manager relation
+  site_manager_ID String?
+  site_manager Site_Manager? @relation(fields: [site_manager_ID], references: [manager_ID])
 
   attendance_history Attendance[]
-  intern             Intern?
-  schedule           Scheduled_day[]
-  site_manager       Site_Manager? @relation("ManagerUser")
-
-  location           Location        @relation("interns", fields: [works_At], references: [location_ID])
 }
 
-model Intern {
-  Intern_ID String @id @map("ID")
-  User      User   @relation(fields: [Intern_ID], references: [ID], onDelete: Cascade)
-}
-
+// UPDATED Site Manager
 model Site_Manager {
-  manager_ID String @id @map("ID")
+  manager_ID String   @id @default(uuid())
+  name       String
+  email      String   @unique
 
-  user       User     @relation("ManagerUser", fields: [manager_ID], references: [ID], onDelete: Cascade)
-
-  locationID String
-  location   Location @relation("ManagerLocation", fields: [locationID], references: [location_ID])
+  // Changed to list of locations
+  locations  Location[]
+  interns Intern[]
 }
 
+// UPDATED Location
 model Location {
-  location_ID       String          @id @default(uuid())
-  location_name     String
-  address           String
+  location_ID String   @id @default(uuid())
+  name        String
 
-  operation_days    Work_day
-  open_time         Int
-  close_time        Int
+  attendance_code String?
 
-  attendance_code   String
-  code_generated_at DateTime?
-  code_expiry_min   Int @default(60)
+  // single datetime
+  code_expires_at DateTime?
 
-  site              Scheduled_day[]
-  site_managers     Site_Manager[]  @relation("ManagerLocation")
-  interns           User[]          @relation("interns")
+  managers Site_Manager[]
+  scheduled_days Scheduled_day[]
 }
 
-model Attendance {
-  id             String            @id @default(uuid())
-
-  clock_in_time  DateTime?
-  clock_out_time DateTime?
-
-  status         Attendance_status @default(ABSENT)
-  request_status Leave_request?    @default(PENDING)
-
-  reason         String?
-
-  userID         String
-  User           User              @relation(fields: [userID], references: [ID])
-}
-
+// UPDATED Scheduled_day
 model Scheduled_day {
-  shift_ID       String     @id @default(uuid())
+  shift_ID   String   @id @default(uuid())
 
-  date           DateTime
-  shift_duration Int
+  // Replaced date and duration
+  start_time DateTime
+  end_time   DateTime
 
-  site_ID        String
-  status         Shift_type @default(on_site)
+  site_ID    String
+  location   Location @relation(fields: [site_ID], references: [location_ID])
 
-  userID         String
+  // Removed userID
 
-  User           User       @relation(fields: [userID], references: [ID])
-  site           Location   @relation(fields: [site_ID], references: [location_ID])
+  attendance Attendance[]
+
+  next_shift_for Intern[] @relation("next_shift")
 }
 
-enum Attendance_status {
-  ABSENT
-  PRESENT
-  CALLED_OFF
-  COVERING_SHIFT
+// UPDATED Attendance
+model Attendance {
+  id              String   @id @default(uuid())
+
+  clock_in_time   DateTime?
+  clock_out_time  DateTime?
+
+  status          String
+
+  // added relation to Scheduled_day
+  shift_ID        String
+  scheduled_day   Scheduled_day @relation(fields: [shift_ID], references: [shift_ID])
+
+  internID        String
+  intern          Intern @relation(fields: [internID], references: [ID])
+
+  // Replaced request_status with relation
+  shift_request_ID String?
+  shift_request    Shift_Request? @relation(fields: [shift_request_ID], references: [id])
 }
 
-enum Leave_request {
-  PENDING
-  ACCEPTED
-  REJECTED
+// Added Admin Table
+model Admin {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
 }
 
-enum Shift_type {
-  remote
-  office_hours
-  on_site
-}
-
-enum Work_day {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
+// Added Shift Request Table (minimal)
+model Shift_Request {
+  id        String   @id @default(uuid())
+  reason    String?
+  createdAt DateTime @default(now())
+  attendances Attendance[]
 }
