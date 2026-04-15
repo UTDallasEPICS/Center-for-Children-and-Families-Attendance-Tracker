@@ -1,141 +1,108 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider    = "prisma-client"
-  output      = "../app/generated/prisma"
-  engineType  = "client"
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
 }
 
-//USER entity is both site manager and intern
-model User {
-  ID String @id @default(uuid()) @map("ID") //uniquely identifiable ID mapped to ID
 
-  //user contact information
-  user_name  String
-  user_email String //@unique
-  user_phone String //@unique
-
-  //employee status
-  intern       Intern?
-  site_manager Site_Manager?
-
-  //collection of their attendance history and future scheduled shifts
-  attendance_history Attendance[]
-  schedule           Scheduled_day[]
-
-  //where the employee works and or manages
-  //---------------------------------------------------------
-  works_At String
-  location Location @relation("interns", fields: [works_At], references: [location_ID])
-}
-
-//extension of user roles for interns 
+// Renamed User to Intern
 model Intern {
-  Intern_ID String @id @map("ID")
-  User      User   @relation(fields: [Intern_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+  ID            String   @id @default(uuid())
+  user_name     String
+  user_email    String   @unique
+  user_phone    String?
+
+  // Removed works_At and location
+
+  // Next upcoming shift pointer
+  next_shift_ID String?
+  next_shift    Scheduled_day? @relation("next_shift", fields: [next_shift_ID], references: [shift_ID])
+
+  // Optional Site Manager relation
+  site_manager_ID String?
+  site_manager Site_Manager? @relation(fields: [site_manager_ID], references: [manager_ID])
+
+  attendance_history Attendance[]
 }
 
-//extension of user roles for Site managers also contains their managed site
+// UPDATED Site Manager
 model Site_Manager {
-  manager_ID String @id @map("ID")
-  User       User   @relation(fields: [manager_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+  manager_ID String   @id @default(uuid())
+  name       String
+  email      String   @unique
 
-  //-----------------------------------------
-  managed_site Location? @relation("manager", fields: [manager_ID], references: [location_ID])
+  // Changed to list of locations
+  locations  Location[]
+  interns Intern[]
 }
 
+// UPDATED Location
 model Location {
-  location_ID    String   @id @default(uuid()) //location identifier
-  //location information name contact days used and times
-  location_name  String   //@unique
-  address        String   
-  operation_days Work_day
-  open_time      Int
-  close_time     Int
+  location_ID String   @id @default(uuid())
+  name        String
 
-  //generated code to check attendance at a location during a workday
-  attendance_code String
+  attendance_code String?
 
-  //list of interns and site manager of specific location
-  //userId  String        @unique
-  interns User[]        @relation("interns")
-  manager Site_Manager? @relation("manager")
+  // single datetime
+  code_expires_at DateTime?
 
-  site     Scheduled_day[] 
+  managers Site_Manager[]
+  scheduled_days Scheduled_day[]
 }
 
-//1 to many user has many attendances,
-model Attendance {
-  id String @id @default(uuid()) //unique identifier
-
-  //clock in time and out time and current attendance status
-  clock_in_time  DateTime?
-  clock_out_time DateTime?
-  status         Attendance_status @default(ABSENT) //defualt being absent
-
-  //absence requests including the status, reason(optional), and covering intern(optional)
-  request_status Leave_request? @default(PENDING)
-  reason         String?
-
-  //id and relationship to the user
-  userID String
-  User   User   @relation(fields: [userID], references: [ID])
-}
-
+// UPDATED Scheduled_day
 model Scheduled_day {
-  // shift identifier
-  shift_ID String @id @default(uuid())
+  shift_ID   String   @id @default(uuid())
 
-  // shift start time (date + time)
-  date DateTime
+  // Replaced date and duration
+  start_time DateTime
+  end_time   DateTime
 
-  // duration of shift in minutes
-  shift_duration Int
+  site_ID    String
+  location   Location @relation(fields: [site_ID], references: [location_ID])
 
-  // location where shift occurs
-  site_ID String
-  site Location @relation(fields: [site_ID], references: [location_ID])
+  // Removed userID
 
-  // shift type
-  status Shift_type @default(on_site)
+  attendance Attendance[]
 
-  // relationship with user
-  userID String
-  User   User @relation(fields: [userID], references: [ID])
+  next_shift_for Intern[] @relation("next_shift")
 }
 
-//the below are enums that are used to signify status's
-enum Attendance_status {
-  ABSENT //If the intern is absent
-  PRESENT //if the intern is actively present
-  CALLED_OFF //if the intern had called off in advance   
-  //EXCUSED           //excused abscence doctors note etc
-  COVERING_SHIFT //for a intern covering a shift of another intern
+// UPDATED Attendance
+model Attendance {
+  id              String   @id @default(uuid())
+
+  clock_in_time   DateTime?
+  clock_out_time  DateTime?
+
+  status          String
+
+  // added relation to Scheduled_day
+  shift_ID        String
+  scheduled_day   Scheduled_day @relation(fields: [shift_ID], references: [shift_ID])
+
+  internID        String
+  intern          Intern @relation(fields: [internID], references: [ID])
+
+  // Replaced request_status with relation
+  shift_request_ID String?
+  shift_request    Shift_Request? @relation(fields: [shift_request_ID], references: [id])
 }
 
-enum Leave_request {
-  PENDING
-  ACCEPTED
-  REJECTED
+// Added Admin Table
+model Admin {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
 }
 
-enum Shift_type {
-  remote
-  office_hours
-  on_site
-}
-
-enum Work_day {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
+// Added Shift Request Table (minimal)
+model Shift_Request {
+  id        String   @id @default(uuid())
+  reason    String?
+  createdAt DateTime @default(now())
+  attendances Attendance[]
 }
