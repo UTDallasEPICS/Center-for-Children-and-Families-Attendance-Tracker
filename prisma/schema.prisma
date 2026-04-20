@@ -2,120 +2,104 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider    = "prisma-client"
-  output      = "../app/generated/prisma"
-  engineType  = "client"
+  provider   = "prisma-client"
+  output     = "../app/generated/prisma"
+  engineType = "client"
 }
 
 datasource db {
   provider = "sqlite"
 }
 
-//USER entity is both site manager and intern
 model User {
-  ID String @id @default(uuid()) @map("ID") //uniquely identifiable ID mapped to ID
+  id String @id @default(uuid()) @map("ID")
 
-  //user contact information
   user_name  String
-  user_email String //@unique
-  user_phone String //@unique
+  user_email String
+  user_phone String
 
-  //employee status
   intern       Intern?
   site_manager Site_Manager?
 
-  //collection of their attendance history and future scheduled shifts
   attendance_history Attendance[]
   schedule           Scheduled_day[]
 
-  //where the employee works and or manages
-  //---------------------------------------------------------
   works_At String
-  location Location @relation("interns", fields: [works_At], references: [location_ID])
+  location Location @relation("interns", fields: [works_At], references: [id])
 }
 
-//extension of user roles for interns 
 model Intern {
-  Intern_ID String @id @map("ID")
-  User      User   @relation(fields: [Intern_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+  id   String @id @map("ID")
+  user User   @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
-//extension of user roles for Site managers also contains their managed site
 model Site_Manager {
-  manager_ID String @id @map("ID")
-  User       User   @relation(fields: [manager_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
-
-  //-----------------------------------------
-  managed_site Location? @relation("manager", fields: [manager_ID], references: [location_ID])
+  id   String @id @map("ID")
+  user User   @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Location {
-  location_ID    String   @id @default(uuid()) //location identifier
-  //location information name contact days used and times
-  location_name  String   //@unique
-  address        String   
+  id String @id @default(uuid())
+
+  location_name String
+  address       String
+
   operation_days Work_day
   open_time      Int
   close_time     Int
 
-  //generated code to check attendance at a location during a workday
   attendance_code String
 
-  //list of interns and site manager of specific location
-  //userId  String        @unique
-  interns User[]        @relation("interns")
-  manager Site_Manager? @relation("manager")
+  interns User[] @relation("interns")
 
-  site     Scheduled_day[] 
+  scheduled_days Scheduled_day[]
 }
 
-//1 to many user has many attendances,
 model Attendance {
-  id String @id @default(uuid()) //unique identifier
+  id String @id @default(uuid())
 
-  //clock in time and out time and current attendance status
   clock_in_time  DateTime?
   clock_out_time DateTime?
-  status         Attendance_status @default(ABSENT) //defualt being absent
+  status         Attendance_status @default(ABSENT)
 
-  //absence requests including the status, reason(optional), and covering intern(optional)
-  request_status Leave_request? @default(PENDING)
-  reason         String?
+  reason String?
 
-  //id and relationship to the user
   userID String
-  User   User   @relation(fields: [userID], references: [ID])
+  user   User @relation(fields: [userID], references: [id])
+
+  shift_request Shift_Request?
+}
+
+model Shift_Request {
+  id String @id @default(uuid())
+
+  reason    String?
+  createdAt DateTime @default(now())
+
+  attendanceId String @unique
+  attendance   Attendance @relation(fields: [attendanceId], references: [id])
 }
 
 model Scheduled_day {
-  // shift identifier
-  shift_ID String @id @default(uuid())
+  id String @id @default(uuid())
 
-  // shift start time (date + time)
-  date DateTime
-
-  // duration of shift in minutes
+  date           DateTime
   shift_duration Int
 
-  // location where shift occurs
   site_ID String
-  site Location @relation(fields: [site_ID], references: [location_ID])
+  site    Location @relation(fields: [site_ID], references: [id])
 
-  // shift type
   status Shift_type @default(on_site)
 
-  // relationship with user
   userID String
-  User   User @relation(fields: [userID], references: [ID])
+  user   User @relation(fields: [userID], references: [id])
 }
 
-//the below are enums that are used to signify status's
 enum Attendance_status {
-  ABSENT //If the intern is absent
-  PRESENT //if the intern is actively present
-  CALLED_OFF //if the intern had called off in advance   
-  //EXCUSED           //excused abscence doctors note etc
-  COVERING_SHIFT //for a intern covering a shift of another intern
+  ABSENT
+  PRESENT
+  CALLED_OFF
+  COVERING_SHIFT
 }
 
 enum Leave_request {
