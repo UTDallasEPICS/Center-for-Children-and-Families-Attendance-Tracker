@@ -3,9 +3,9 @@
 ## Prerequisites
 Install the following:
 
-- **Node.js 18 or later**  
+- **Node.js 24 or later**  
   https://nodejs.org/en
-- **npm 9 or later** (bundled with Node.js)
+- **Prisma 7 or later**
 - **Git**
 
 ---
@@ -13,7 +13,7 @@ Install the following:
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker.git
+git clone https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker.git &&
 cd Center-for-Children-and-Families-Attendance-Tracker
 ```
 
@@ -29,7 +29,28 @@ This installs all Nuxt dependencies and prepares the project for local developme
 
 ---
 
-## 3. Start the Development Server
+## 3. Copy .env.example to .env
+
+```bash
+cp .env.example .env
+```
+
+You can also just copy it using your editor's tools
+
+---
+
+## 4. Instantiate Database and Prisma Client
+
+```bash
+npx prisma generate &&
+npx prisma migrate dev
+```
+
+This instantiates the prisma client and database
+
+---
+
+## 5. Start the Development Server
 
 ```bash
 npm run dev
@@ -43,13 +64,7 @@ Example output:
 Local: http://localhost:3005/
 ```
 
----
-
-## 4. Access the Application
-
-Open the printed localhost URL in your browser.
-
-To expose the dev server on your network:
+To expose development server to network for viewing on other devices
 
 ```bash
 npm run dev -- --host
@@ -57,21 +72,14 @@ npm run dev -- --host
 
 ---
 
-## 5. Recommended Tools
+## Recommended Tools
 
 - **Visual Studio Code**
 - **Volar extension** (Vue/Nuxt)
 - **Nuxt Documentation**  
   https://nuxt.com/docs
-
----
-
-## Database Status (Fall 2025)
-
-The backend database layer is still in development
-
-- `npm run dev` starts the frontend only; backend and database operations are not yet active.
-- Full database initialization steps will be added later.
+- **Vue Documentation**
+  https://vuejs.org/guide
 
 ---
 
@@ -92,12 +100,8 @@ Authentication is not yet connected to a backend identity system.
   Core framework used for building the application.
 - **Vue 3 (Composition API)**  
   Frontend component system.
-- **TypeScript**  
-  Used across the codebase for type safety.
 - **TailwindCSS**  
   Utility-first styling framework.
-- **shadcn-vue components**  
-  Provides reusable UI components such as buttons, inputs, dialogs, and selects.
 - **Vite**  
   Dev server and bundler used by Nuxt for fast HMR.
 
@@ -106,7 +110,7 @@ Authentication is not yet connected to a backend identity system.
 ### Backend (In Development)
 - **Nuxt Nitro Server**  
   Server engine behind API routes and backend logic.
-- **Prisma ORM (planned)**  
+- **Prisma ORM**  
   For modeling schema and interacting with the database. Backend queries are still being developed.
 
 ---
@@ -118,8 +122,7 @@ Authentication is not yet connected to a backend identity system.
 ---
 
 ### Tooling
-- **Node.js 18+**  
-- **npm 9+**  
+- **Node.js 24+**  
 - **Git**  
 - **VS Code + Volar extension**
 
@@ -127,5 +130,4 @@ Authentication is not yet connected to a backend identity system.
 
 ### Planned Integrations
 - OAuth / SSO authentication  
-- Cloud-hosted production database  
 

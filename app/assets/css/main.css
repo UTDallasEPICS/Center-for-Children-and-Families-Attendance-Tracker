@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 @theme {
   --font-sans: "Roboto", sans-serif;
   
@@ -18,11 +17,9 @@
   --color-error: #E7000B;
   --color-warning: #E17100;
   --color-success: #00A63E;
-  --color-white: #FFFFFF;
 }
 
 /* Optical correction for inline label text next to icons/buttons */
 @utility label-optical {
   transform: translateY(1px);
 }
-

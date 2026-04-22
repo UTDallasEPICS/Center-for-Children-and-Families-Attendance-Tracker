@@ -1,0 +1,51 @@
+name: Auto-Link and Close Issue
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  link-and-close:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read # Added to allow the checkout step
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Extract Issue Number
+        id: extract_number
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          ISSUE_NUMBER=$(echo "$BRANCH_NAME" | grep -oP '^\d+')
+          
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "No issue number found at the start of $BRANCH_NAME. Skipping."
+            exit 0
+          fi
+          
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Update PR Description
+        if: steps.extract_number.outputs.issue_number != ''
+        run: |
+          ISSUE_REF="#${{ steps.extract_number.outputs.issue_number }}"
+          CLOSE_KEYWORD="Closes $ISSUE_REF"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          
+          # We add --repo $GITHUB_REPOSITORY to ensure 'gh' knows exactly where to look
+          CURRENT_BODY=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json body --template '{{.body}}')
+          
+          if [[ "$CURRENT_BODY" == *"$ISSUE_REF"* ]]; then
+            echo "Issue $ISSUE_REF is already mentioned."
+            exit 0
+          fi
+
+          NEW_BODY="$CLOSE_KEYWORD
+
+          $CURRENT_BODY"
+          
+          gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$NEW_BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

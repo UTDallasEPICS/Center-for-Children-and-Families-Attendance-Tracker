@@ -1,32 +1,40 @@
 {
-	"name": "nuxt-app",
-	"type": "module",
-	"private": true,
-	"scripts": {
-		"build": "nuxt build",
-		"dev": "nuxt dev",
-		"generate": "nuxt generate",
-		"preview": "nuxt preview",
-		"postinstall": "nuxt prepare"
-	},
-	"dependencies": {
-		"@fullcalendar/core": "^6.1.15",
-		"@fullcalendar/daygrid": "^6.1.15",
-		"@nuxt/ui": "^4.6.0",
-		"@prisma/adapter-better-sqlite3": "^7.1.0",
-		"@prisma/client": "^7.1.0",
-		"@tailwindcss/postcss": "^4.1.17",
-		"@tailwindcss/vite": "^4.1.13",
-		"dotenv": "^17.2.3",
-		"nuxt": "^4.1.0",
-		"tailwindcss": "^4.2.2",
-		"vue": "^3.5.20",
-		"vue-router": "^4.5.1"
-	},
-	"devDependencies": {
-		"@types/better-sqlite3": "^7.6.13",
-		"@types/node": "^24.10.1",
-		"prettier": "^3.6.2",
-		"prisma": "^7.1.0"
-	}
+    "name": "nuxt-app",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "typecheck": "nuxt typecheck",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
+    },
+    "dependencies": {
+        "@fullcalendar/core": "^6.1.15",
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@nuxt/ui": "^4.6.0",
+        "@nuxt/eslint": "^1.15.2",
+        "@nuxt/fonts": "^0.14.0",
+        "@prisma/adapter-better-sqlite3": "^7.1.0",
+        "@prisma/client": "^7.1.0",
+        "@tailwindcss/postcss": "^4.1.17",
+        "@tailwindcss/vite": "^4.1.13",
+        "dotenv": "^17.2.3",
+        "lucide-vue-next": "^1.0.0",
+        "nuxt": "^4.1.0",
+        "tailwindcss": "^4.1.13",
+        "vue": "^3.5.20",
+        "vue-router": "^4.5.1"
+    },
+    "devDependencies": {
+        "@types/better-sqlite3": "^7.6.13",
+        "@types/node": "^24.10.1",
+        "prettier": "^3.6.2",
+        "prisma": "^7.1.0",
+        "typescript": "^5.9.3",
+        "vue-tsc": "^3.2.5"
+    }
 }

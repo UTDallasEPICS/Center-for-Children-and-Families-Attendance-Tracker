@@ -1,16 +1,21 @@
 {
-	"printWidth": 160,
-	"endOfLine": "auto",
-	"useTabs": true,
-	"tabWidth": 4,
-	"trailingComma": "es5",
-	"semi": false,
-	"singleQuote": false,
-	"bracketSpacing": true,
-	"arrowParens": "always",
-	"htmlWhitespaceSensitivity": "css",
-	"requirePragma": false,
-	"insertPragma": false,
-	"quoteProps": "as-needed",
-	"proseWrap": "always"
+    "printWidth": 160,
+    "endOfLine": "auto",
+    "useTabs": false,
+    "tabWidth": 4,
+    "vueIndentScriptAndStyle": true,
+    "trailingComma": "es5",
+    "semi": false,
+    "singleQuote": false,
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "proseWrap": "always",
+    "overrides": [
+        {
+            "files": ["*.vue"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
 }
