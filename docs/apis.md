@@ -41,7 +41,9 @@ Updates the intern’s check-in or check-out time for the current day. The reque
       {
         "datetime": "ISO 8601 Datetime",
         "site": "site_id",
-        "attendance_status": "upcoming | covered | null"
+        "attendance_status": "upcoming | covered | null",
+         "checkin_time": "null",
+        "checkout_time": "null",
       },
       ...
     ],

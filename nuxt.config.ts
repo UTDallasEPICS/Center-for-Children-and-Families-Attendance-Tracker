@@ -4,6 +4,10 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineNuxtConfig({
     compatibilityDate: "2025-07-15",
 
+    alias: {
+        '@app-types': './types'
+    },
+
     runtimeConfig: {
         redcapApiToken: process.env.REDCAP_API_TOKEN,
         programStartDate: process.env.PROGRAM_START_DATE,
@@ -30,5 +34,11 @@ export default defineNuxtConfig({
 
     components: true,
 
-    modules: [],
+    modules: ["@nuxt/eslint", "@nuxt/fonts"],
+
+    fonts: {
+        families: [
+            { name: "Roboto", weights: [400, 500] },
+        ],
+    },
 })
