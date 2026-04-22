@@ -38,22 +38,19 @@ const items = ref<NavigationMenuItem[]>([
   </div>
 
    <Teleport to="body">
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-[100] bg-white flex flex-col p-6 gap-4"
-    >
+   <div v-if="isOpen" class="fixed inset-0 z-[100] bg-white flex flex-col p-6 gap-4 items-end">
       <UButton
         variant="ghost"
         icon="i-lucide-x"
         class="self-end"
         @click="isOpen = false"
       />
-      <UButton variant="ghost" label="Dashboard" to="/" size="xl" class="w-full justify-center"/>
-      <UButton variant="ghost" label="Messages" to="/" size="xl" class="w-full justify-center"/>
-      <UButton variant="ghost" label="Participant Check-In" to="/" size="xl" class="w-full justify-center"/>
-      <UButton variant="ghost" label="Site Management" to="/" size="xl" class="w-full justify-center"/>
-      <UButton variant="ghost" label="Intern Information" to="/" size="xl" class="w-full justify-center"/>
-      <UButton variant="ghost" label="Participant Information" to="/" size="xl" class="w-full justify-center"/>
+      <UButton variant="ghost" label="Dashboard" to="/" size="xl"/>
+      <UButton variant="ghost" label="Messages" to="/" size="xl"/>
+      <UButton variant="ghost" label="Participant Check-In" to="/" size="xl" />
+      <UButton variant="ghost" label="Site Management" to="/" size="xl" />
+      <UButton variant="ghost" label="Intern Information" to="/" size="xl"/>
+      <UButton variant="ghost" label="Participant Information" to="/" size="xl"/>
     </div>
   </Teleport>
 
@@ -65,8 +62,8 @@ const items = ref<NavigationMenuItem[]>([
       variant="link"
       class="w-full justify-center"
       :ui="{
-        list: 'isolate min-w-0 flex items-center gap-[clamp(2rem,17vw,20rem)]',
-        linkLabel: 'text-[clamp(0.5rem,1.75vw,2rem)]'
+        list: 'isolate min-w-0 flex items-center gap-[clamp(8rem,8vw,12rem)]',
+        linkLabel: 'text-[clamp(1rem,1.5vw,2rem)]'
       }"
     />
   </div>
