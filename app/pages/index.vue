@@ -46,10 +46,7 @@
     }
     showCheckInPinModal.value = false
   }
-<<<<<<< HEAD
   showCheckInPinModal.value = false
 }
 
-=======
->>>>>>> spring2026
 </script>
