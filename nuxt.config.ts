@@ -19,22 +19,9 @@ export default defineNuxtConfig({
 
     devtools: { enabled: true },
     css: ["~/assets/css/main.css"],
-
-    // Tailwind CSS Vite Plugin
-    vite: {
-        plugins: [tailwindcss()],
-    },
-
-    //Required PostCSS pipeline for Tailwind, nesting, etc.
-    postcss: {
-        plugins: {
-            autoprefixer: {},
-        },
-    },
-
     components: true,
 
-    modules: ["@nuxt/eslint", "@nuxt/fonts", "@nuxt/ui"],
+    modules: ["@nuxt/eslint", "@nuxt/ui"],
 
     fonts: {
         families: [

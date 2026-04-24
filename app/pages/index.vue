@@ -46,7 +46,4 @@
     }
     showCheckInPinModal.value = false
   }
-  showCheckInPinModal.value = false
-}
-
 </script>
