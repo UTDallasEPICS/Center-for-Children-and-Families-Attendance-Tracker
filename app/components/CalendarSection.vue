@@ -1,4 +1,3 @@
-import '../assets/css/main.css'
 <script setup lang="ts">
 
 import { ref, computed } from 'vue'
@@ -8,6 +7,12 @@ const current = ref(new Date())
 
 const {data, pending, error } = await useFetch('/api/intern/schedule/${user_id}')
 
+const selectedDay = ref<Date>(new Date())
+  
+const monthNames = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December'
+]
 
 type shift = {
   date: string ,
@@ -22,36 +27,76 @@ type schedule = {
   upcoming_shifts: shift[], 
 }
 
-/*
-//commented out till intern apis are done nukes the calander, so we can work on the rest of the ui
+const scheduleData = ref<schedule>({
+  past_shifts: [],
+  upcoming_shifts: []
+})
+
 const attendanceCounts = computed(() => {
   const counts = { good: 0, late: 0, absent: 0 }
-  
-  (data.value?.past_shifts ?? []).forEach(shift => {
-    counts[shift.status]++
-  })
+
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
+
+  for (let i = scheduleData.value.past_shifts.length - 1; i >= 0; i--) {
+    const shift = scheduleData.value.past_shifts[i]
+
+    const [year, month, day] = shift.date.split('-').map(Number)
+    const d = new Date(year, month - 1, day)
+
+    if (
+      d.getMonth() === currentMonth &&
+      d.getFullYear() === currentYear
+    ) {
+      if (shift.status === 'good') counts.good++
+      else if (shift.status === 'late') counts.late++
+      else if (shift.status === 'absent') counts.absent++
+    }
+  }
 
   return counts
 })
-*/
+  
+function getShiftTimesByDate(targetDate: Date) {
+  const target = targetDate.toISOString().split('T')[0]
 
+  const shift = scheduleData.value.past_shifts.find(
+    s => s.date === target
+  )
 
-const attendanceCounts = ref({
-  good: 3,
-  late: 2,
-  absent: 0
-})
+  if (!shift) return null
 
-const selectedDay = ref(new Date().getDate())
-
-function selectNewDay(day) {
-    selectedDay.value = day
+  return {
+    checkin: shift.checkin_time,
+    checkout: shift.checkout_time
+  }
+}
+function selectNewDay(day: Date) {
+  selectedDay.value = day
 }
 
-const monthNames = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December'
-]
+function formatDateLocal(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const selectedShiftTimes = computed(() => {
+  const target = formatDateLocal(selectedDay.value)
+
+  const shift = scheduleData.value.past_shifts.find(
+    s => s.date === target
+  )
+
+  return shift
+    ? {
+        checkin: shift.checkin_time,
+        checkout: shift.checkout_time
+      }
+    : null
+})
 
 function prevMonth() {
   current.value = new Date(
@@ -85,7 +130,7 @@ const startDay = computed(() => {
   return new Date(
     current.value.getFullYear(),
     current.value.getMonth(),
-    1
+    1 //date is one
   ).getDay()
 })
 
@@ -103,6 +148,26 @@ const calendarDays = computed(() => {
   return days
 })
 
+//makes shift color on a dates satus
+function getDotClass(day) {
+  const date = getDateString(day)
+  const status = shiftsByDate.value[date]
+
+  if (status === 'good') return '--color-success'
+  if (status === 'late') return '--color-warning'
+  if (status === 'absent') return '--color-error'
+
+  return null // no shift
+}
+
+function getDateString(day) {
+  const year = current.value.getFullYear()
+  const month = current.value.getMonth() + 1
+
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
+
+
 const shiftsByDate = computed(() => {
   const map = {}
 
@@ -117,23 +182,6 @@ const shiftsByDate = computed(() => {
 
   return map
 })
-function getDateString(day) {
-  const year = current.value.getFullYear()
-  const month = current.value.getMonth() + 1
-
-  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-}
-
-function getDotClass(day) {
-  const date = getDateString(day)
-  const status = shiftsByDate.value[date]
-
-  if (status === 'good') return '--color-success'
-  if (status === 'late') return '--color-warning'
-  if (status === 'absent') return '--color-error'
-
-  return 'hidden' // no shift → no dot
-}
 
 </script>
 
@@ -165,7 +213,7 @@ function getDotClass(day) {
       <span class="text-gray-900 text-base"> {{ monthLabel }}</span>
 
       <div class="flex gap-9">
-        <button @click="prevMonth" class="cursor-pointer text-lg hover:text-gray-600">  
+        <button @click="prevMonth" class="cursor-pointer text-lg hover:text-gray-00">  
           <ChevronLeft/>
         </button>
         <button @click="nextMonth" class="cursor-pointer text-lg hover:text-gray-600">
@@ -188,13 +236,12 @@ function getDotClass(day) {
         </tr>
       </thead>
       </table>
-
-   <div class="grid grid-cols-7">
- <div
+<div class="grid grid-cols-7">
+<div
   v-for="(day, i) in calendarDays"
   :key="i"
-  class="cal-cell relative flex items-center justify-center cursor-pointer rounded-lg transition"
-  :class="selectedDay === day ? 'bg-orange-100 text-white rounded-full' : ''"
+  class="text-base text-gray-900 w-11 h-11 text-center relative hover:bg-gray-200 hover:rounded-lg cursor-pointer flex items-center justify-center cursor-pointer rounded-lg transition"
+  :class="selectedDay === day ? 'bg-orange-100 rounded-full' : ''"
   @click="selectNewDay(day)"
 >
   <span>{{ day }}</span>
@@ -205,21 +252,17 @@ function getDotClass(day) {
     :class="getDotClass(day)"
   ></div>
 </div>
+
+  </div>
+
     <div class="w-full border-t border-gray-200 "></div>
 
     <!-- Shift Info -->
     <div class="flex justify-between w-full text-gray-600 text-sm mt-2">
-      <span>10:57 AM - 12:35PM</span>
-      <span>1h38min</span>
+      <div v-if="selectedShiftTimes">
+  <p>{{ selectedShiftTimes.checkin }} - {{ selectedShiftTimes.checkout }}</p>
+</div>
     </div>
 
   </div>
 </template>
-
-<style scoped>
-@reference "../assets/css/main.css";
-
-.cal-cell {
-  @apply w-11 h-11 text-center text-base text-gray-900 hover:bg-gray-200 hover:rounded-lg cursor-pointer;
-}
-</style>
