@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
         const shiftStart = new Date(potentialShift.date)
 
         const shiftEnd = new Date(potentialShift.date)
-        shiftEnd.setMinutes(shiftEnd.getMinutes() + potentialShift.shift_duration)
+        shiftEnd.setMinutes(shiftEnd.getMinutes() + (potentialShift.shift_start - potentialShift.shift_end))
 
         if (curr_date >= shiftStart && curr_date <= shiftEnd) {
             activeShift = potentialShift
