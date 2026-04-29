@@ -41,68 +41,92 @@ model Site_Manager {
 
 // UPDATED Location
 model Location {
-  location_ID String   @id @default(uuid())
-  name        String
+  location_ID    String   @id @default(uuid()) //location identifier
+  //location information name contact days used and times
+  location_name  String   //@unique
+  address        String   
+  operation_days Work_day
+  open_time      Int
+  close_time     Int
 
-  attendance_code String?
+  //generated code to check attendance at a location during a workday
+  attendance_code String
 
-  // single datetime
-  code_expires_at DateTime?
+  //list of interns and site manager of specific location
+  //userId  String        @unique
+  interns User[]        @relation("interns")
+  manager Site_Manager? @relation("manager")
 
-  managers Site_Manager[]
-  scheduled_days Scheduled_day[]
+  site     Scheduled_day[] 
 }
 
-// UPDATED Scheduled_day
-model Scheduled_day {
-  shift_ID   String   @id @default(uuid())
-
-  // Replaced date and duration
-  start_time DateTime
-  end_time   DateTime
-
-  site_ID    String
-  location   Location @relation(fields: [site_ID], references: [location_ID])
-
-  // Removed userID
-
-  attendance Attendance[]
-
-  next_shift_for Intern[] @relation("next_shift")
-}
-
-// UPDATED Attendance
+//1 to many user has many attendances,
 model Attendance {
-  id              String   @id @default(uuid())
+  id String @id @default(uuid()) //unique identifier
 
-  clock_in_time   DateTime?
-  clock_out_time  DateTime?
+  //clock in time and out time and current attendance status
+  clock_in_time  DateTime?
+  clock_out_time DateTime?
+  status         Attendance_status @default(ABSENT) //defualt being absent
 
-  status          String
+  //absence requests including the status, reason(optional), and covering intern(optional)
+  request_status Leave_request? @default(PENDING)
+  reason         String?
 
-  // added relation to Scheduled_day
-  shift_ID        String
-  scheduled_day   Scheduled_day @relation(fields: [shift_ID], references: [shift_ID])
-
-  internID        String
-  intern          Intern @relation(fields: [internID], references: [ID])
-
-  // Replaced request_status with relation
-  shift_request_ID String?
-  shift_request    Shift_Request? @relation(fields: [shift_request_ID], references: [id])
+  //id and relationship to the user
+  userID String
+  User   User   @relation(fields: [userID], references: [ID])
 }
 
-// Added Admin Table
-model Admin {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
+model Scheduled_day {
+  // shift identifier
+  shift_ID String @id @default(uuid())
+
+  // shift start time (date + time)
+  date DateTime
+
+  // duration of shift in minutes
+  shift_duration Int
+
+  // location where shift occurs
+  site_ID String
+  site Location @relation(fields: [site_ID], references: [location_ID])
+
+  // shift type
+  status Shift_type @default(on_site)
+
+  // relationship with user
+  userID String
+  User   User @relation(fields: [userID], references: [ID])
 }
 
-// Added Shift Request Table (minimal)
-model Shift_Request {
-  id        String   @id @default(uuid())
-  reason    String?
-  createdAt DateTime @default(now())
-  attendances Attendance[]
+//the below are enums that are used to signify status's
+enum Attendance_status {
+  ABSENT //If the intern is absent
+  PRESENT //if the intern is actively present
+  CALLED_OFF //if the intern had called off in advance   
+  //EXCUSED           //excused abscence doctors note etc
+  COVERING_SHIFT //for a intern covering a shift of another intern
+}
+
+enum Leave_request {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum Shift_type {
+  remote
+  office_hours
+  on_site
+}
+
+enum Work_day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }

@@ -15,7 +15,24 @@
 **Response Type:** None  
 
 **Description:**  
-Updates the intern’s check-in or check-out time for the current day. The request updates the values stored in `Users.attendance_history.clock_in_time` and `clock_out_time`.
+Updates the intern’s check-in or check-out time for the day. The request updates the values stored in `Users.attendance_history.clock_in_time` and `clock_out_time`.
+
+---
+
+### GET - /api/intern/time/[user_id]
+**Content Type:** None  
+
+**Response Type:** application/json  
+**Response Body:**
+```json
+{
+"checkin_time": "ISO 8601 Datetime",
+"checkout_time": "ISO 8601 Datetime",
+}
+```
+
+**Description:**  
+Retrieves the intern’s check-in time for the current day for display on the intern home page.
 
 ---
 
@@ -31,9 +48,7 @@ Updates the intern’s check-in or check-out time for the current day. The reque
       {
         "datetime": "ISO 8601 Datetime",
         "site": "site_id",
-        "attendance_status": "present | absent | covered",
-        "checkin_time": "ISO 8601 Datetime",
-        "checkout_time": "ISO 8601 Datetime",
+        "attendance_status": "present | absent | covered"
       },
       ...
     ],
@@ -41,9 +56,7 @@ Updates the intern’s check-in or check-out time for the current day. The reque
       {
         "datetime": "ISO 8601 Datetime",
         "site": "site_id",
-        "attendance_status": "upcoming | covered | null",
-         "checkin_time": "null",
-        "checkout_time": "null",
+        "attendance_status": "covered | null"
       },
       ...
     ],
@@ -51,7 +64,7 @@ Updates the intern’s check-in or check-out time for the current day. The reque
 }
 ```
 **Description:**  
-Retrieves entirety of semesters scheduled days assigned to a specific intern and returns relevant dates and times.
+Retrieves entirety of semesters scheduled days assigned to a specific intern and returns only relevant dates and times.
 
 ---
 
@@ -64,11 +77,10 @@ Retrieves entirety of semesters scheduled days assigned to a specific intern and
 **Response Body:**
 ```json
 {
-  "participants": {
-    "particpant_name": "String",
-    "DOB": "String",
-    "guardians": ["String"],
-    },
+  [
+  "<participant-data>"
+  ],
+  ...
 }
 ```
 
@@ -83,11 +95,7 @@ Retrieves participant information. If an ID is provided, only that participants 
 ```json
 {
   "clock_in_time": "ISO 8601 Datetime",
-  "data" : {
-    "guardians": ["bool"],
-    "additional_children": "bool",
-    "comments": ["String"],
-  },
+  "data" : "<checkin-data>"
 }
 ```
 
@@ -97,7 +105,6 @@ Retrieves participant information. If an ID is provided, only that participants 
 Sends a completed participant weekly check-in JSON object to REDCap to update the participant’s profile.
 
 ---
-
 
 ## Site Manager Page
 
