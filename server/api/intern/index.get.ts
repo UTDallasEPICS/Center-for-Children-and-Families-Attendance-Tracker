@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event)
 
     if (query.ID) {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.intern.findUnique({
             where: {
                 ID: query.ID as string,
             },
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     }
 
     if (query.user_name) {
-        const user = await prisma.user.findMany({
+        const user = await prisma.intern.findMany({
             where: {
                 user_name: { startsWith: query.user_name as string },
             },
@@ -19,11 +19,11 @@ export default defineEventHandler(async (event) => {
                 location: true,
             },
         })
-        console.log("filtered users: ", user)
-        return user
+        console.log("filtered intern: ", user)
+        return intern
     }
 
-    const user = await prisma.user.findMany({
+    const user = await prisma.intern.findMany({
         include: {
             location: true,
         },

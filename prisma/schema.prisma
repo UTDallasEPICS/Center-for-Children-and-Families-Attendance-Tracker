@@ -1,54 +1,45 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider    = "prisma-client"
-  output      = "../app/generated/prisma"
-  engineType  = "client"
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
 }
 
-//USER entity is both site manager and intern
-model User {
-  ID String @id @default(uuid()) @map("ID") //uniquely identifiable ID mapped to ID
 
-  //user contact information
-  user_name  String
-  user_email String //@unique
-  user_phone String //@unique
-
-  //employee status
-  intern       Intern?
-  site_manager Site_Manager?
-
-  //collection of their attendance history and future scheduled shifts
-  attendance_history Attendance[]
-  schedule           Scheduled_day[]
-
-  //where the employee works and or manages
-  //---------------------------------------------------------
-  works_At String
-  location Location @relation("interns", fields: [works_At], references: [location_ID])
-}
-
-//extension of user roles for interns 
+// Renamed User to Intern
 model Intern {
-  Intern_ID String @id @map("ID")
-  User      User   @relation(fields: [Intern_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+  ID            String   @id @default(uuid())
+  user_name     String
+  user_email    String   @unique
+  user_phone    String?
+
+  // Removed works_At and location
+
+  // Next upcoming shift pointer
+  next_shift_ID String?
+  next_shift    Scheduled_day? @relation("next_shift", fields: [next_shift_ID], references: [shift_ID])
+
+  // Optional Site Manager relation
+  site_manager_ID String?
+  site_manager Site_Manager? @relation(fields: [site_manager_ID], references: [manager_ID])
+
+  attendance_history Attendance[]
 }
 
-//extension of user roles for Site managers also contains their managed site
+// UPDATED Site Manager
 model Site_Manager {
-  manager_ID String @id @map("ID")
-  User       User   @relation(fields: [manager_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+  manager_ID String   @id @default(uuid())
+  name       String
+  email      String   @unique
 
-  //-----------------------------------------
-  managed_site Location? @relation("manager", fields: [manager_ID], references: [location_ID])
+  // Changed to list of locations
+  locations  Location[]
+  interns Intern[]
 }
 
+// UPDATED Location
 model Location {
   location_ID    String   @id @default(uuid()) //location identifier
   //location information name contact days used and times

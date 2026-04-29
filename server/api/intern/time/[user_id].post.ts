@@ -5,14 +5,14 @@ export default defineEventHandler(async (event) => {
     const userID = event.context.params?.user_id as string
     const { check_in_type, check_in_code } = body
 
-    const now = new Date()
+    const curr_date = new Date()
 
     // Find active shift 
     const potentialShift = await prisma.scheduled_day.findFirst({
         where: {
             userID: userID,
             date: {
-                lte: now
+                lte: curr_date
             }
         },
         orderBy: {
@@ -29,9 +29,9 @@ export default defineEventHandler(async (event) => {
         const shiftStart = new Date(potentialShift.date)
 
         const shiftEnd = new Date(potentialShift.date)
-        shiftEnd.setMinutes(shiftEnd.getMinutes() + potentialShift.shift_duration)
+        shiftEnd.setMinutes(shiftEnd.getMinutes() + (potentialShift.shift_start - potentialShift.shift_end))
 
-        if (now >= shiftStart && now <= shiftEnd) {
+        if (curr_date >= shiftStart && curr_date <= shiftEnd) {
             activeShift = potentialShift
         }
     }
@@ -79,7 +79,7 @@ export default defineEventHandler(async (event) => {
             attendance = await prisma.attendance.create({
                 data: {
                     userID: userID,
-                    clock_in_time: now,
+                    clock_in_time: curr_date,
                     status: "PRESENT"
                 }
             })
@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
                     id: attendance.id
                 },
                 data: {
-                    clock_in_time: now
+                    clock_in_time: curr_date
                 }
             })
         }
@@ -110,7 +110,7 @@ export default defineEventHandler(async (event) => {
                 id: attendance.id
             },
             data: {
-                clock_out_time: now
+                clock_out_time: curr_date
             }
         })
     }
