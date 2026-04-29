@@ -60,7 +60,7 @@ model Location {
   close_time     Int
 
   //generated code to check attendance at a location during a workday
-  attendance_code Int
+  attendance_code String
 
   //list of interns and site manager of specific location
   //userId  String        @unique
@@ -75,8 +75,8 @@ model Attendance {
   id String @id @default(uuid()) //unique identifier
 
   //clock in time and out time and current attendance status
-  clock_in_time  DateTime
-  clock_out_time DateTime
+  clock_in_time  DateTime?
+  clock_out_time DateTime?
   status         Attendance_status @default(ABSENT) //defualt being absent
 
   //absence requests including the status, reason(optional), and covering intern(optional)
@@ -89,22 +89,25 @@ model Attendance {
 }
 
 model Scheduled_day {
-  //date and time intern is scheduled to work
-  shift_ID    String   @id @default(uuid())
-  date        DateTime
-  shift_start Int
-  shift_end   Int
+  // shift identifier
+  shift_ID String @id @default(uuid())
 
-  //where the intern is scheduled to work
-  site_ID       String
-  site Location    @relation(fields: [site_ID], references: [location_ID])
+  // shift start time (date + time)
+  date DateTime
 
-  //type of shift the intern is having
+  // duration of shift in minutes
+  shift_duration Int
+
+  // location where shift occurs
+  site_ID String
+  site Location @relation(fields: [site_ID], references: [location_ID])
+
+  // shift type
   status Shift_type @default(on_site)
 
-  //unique id and relationship with user
+  // relationship with user
   userID String
-  User   User   @relation(fields: [userID], references: [ID])
+  User   User @relation(fields: [userID], references: [ID])
 }
 
 //the below are enums that are used to signify status's
