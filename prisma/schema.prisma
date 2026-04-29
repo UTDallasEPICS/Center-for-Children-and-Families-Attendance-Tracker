@@ -25,6 +25,7 @@ model User {
   site_manager Site_Manager?
 
   //collection of their attendance history and future scheduled shifts
+
   attendance_history Attendance[]
   schedule           Scheduled_day[]
 
