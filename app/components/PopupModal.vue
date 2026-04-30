@@ -26,7 +26,7 @@ const close = () => {
   emit("close")
 }
 
-// Scroll lock
+// Scroll lock and additional features
 watch(
   () => props.isOpen,
   (val) => {
