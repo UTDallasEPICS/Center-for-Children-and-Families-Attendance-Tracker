@@ -17,6 +17,13 @@
   --color-error: #E7000B;
   --color-warning: #E17100;
   --color-success: #00A63E;
+  --color-callOff: #0088FF;
+
+  /*sematnic bgs */
+  --color-error-bg: #F1B0B037;
+  --color-warning-bg: #EDD2B149;
+  --color-success-bg: #B1EDCC47;
+  --color-callOff-bg: #B0CFF137;
 }
 
 /* Optical correction for inline label text next to icons/buttons */
