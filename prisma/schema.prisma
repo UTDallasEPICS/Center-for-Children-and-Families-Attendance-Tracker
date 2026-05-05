@@ -8,61 +8,58 @@ datasource db {
   provider = "sqlite"
 }
 
-model User {
-  ID String @id @default(uuid()) @map("ID")
+model Intern {
+  id String @id @default(uuid()) @map("ID")
 
   user_name  String
   user_email String
   user_phone String
 
-  intern       Intern?
-  site_manager Site_Manager?
+  next_shift_ID String?
+  next_shift    Scheduled_day? @relation("next_shift", fields: [next_shift_ID], references: [id])
+
+  site_manager Site_Manager? @relation("site_manager_profile")
 
   attendance_history Attendance[]
-  schedule           Scheduled_day[]
 
-  works_At String
-  location Location @relation("interns", fields: [works_At], references: [location_ID])
-
-  shift_requests_created Shift_Request[] @relation("created_by")
-}
-
-model Intern {
-  Intern_ID String @id @map("ID")
-  User      User   @relation(fields: [Intern_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
-
-  manager_ID String? @unique
-  manager    Site_Manager? @relation(fields: [manager_ID], references: [manager_ID])
-
-  picked_requests Shift_Request[]
+  created_shift_requests   Shift_Request[] @relation("created_shift_requests")
+  picked_up_shift_requests Shift_Request[] @relation("picked_up_shift_requests")
 }
 
 model Site_Manager {
-  manager_ID String @id @map("ID")
-  User       User   @relation(fields: [manager_ID], references: [ID], onDelete: Cascade, onUpdate: Cascade)
+  id String @id @default(uuid())
+
+  intern_ID String @unique
+  intern    Intern @relation("site_manager_profile", fields: [intern_ID], references: [id])
 
   locations Location[]
-
-  intern Intern?
 }
 
 model Location {
-  location_ID String @id @default(uuid())
+  id String @id @default(uuid())
 
   location_name String
   address       String
 
-  operation_days Work_day
-  open_time      Int
-  close_time     Int
+  attendance_code String?
+  code_expires_at DateTime?
 
-  attendance_code String
+  managers       Site_Manager[]
+  scheduled_days Scheduled_day[]
+}
 
-  interns User[] @relation("interns")
+model Scheduled_day {
+  id String @id @default(uuid())
 
-  managers Site_Manager[]
+  start_time DateTime
+  end_time   DateTime
 
-  site Scheduled_day[]
+  site_ID  String
+  location Location @relation(fields: [site_ID], references: [id])
+
+  attendance Attendance[]
+
+  next_shift_for Intern[] @relation("next_shift")
 }
 
 model Attendance {
@@ -72,28 +69,14 @@ model Attendance {
   clock_out_time DateTime?
   status         Attendance_status @default(ABSENT)
 
-  request_status Leave_request? @default(PENDING)
-  reason         String?
+  internID String
+  intern   Intern @relation(fields: [internID], references: [id])
 
-  userID String
-  User   User @relation(fields: [userID], references: [ID])
-}
+  shift_ID      String
+  scheduled_day Scheduled_day @relation(fields: [shift_ID], references: [id])
 
-model Scheduled_day {
-  shift_ID String @id @default(uuid())
-
-  date DateTime
-  shift_duration Int
-
-  site_ID String
-  site Location @relation(fields: [site_ID], references: [location_ID])
-
-  status Shift_type @default(on_site)
-
-  userID String
-  User   User @relation(fields: [userID], references: [ID])
-
-  shift_requests Shift_Request[]
+  shift_request_ID String?
+  shift_request    Shift_Request? @relation(fields: [shift_request_ID], references: [id])
 }
 
 model Shift_Request {
@@ -103,13 +86,19 @@ model Shift_Request {
   createdAt DateTime @default(now())
 
   created_by_ID String
-  created_by    User @relation("created_by", fields: [created_by_ID], references: [ID])
+  created_by    Intern @relation("created_shift_requests", fields: [created_by_ID], references: [id])
 
-  picked_by_ID String?
-  picked_by    Intern? @relation(fields: [picked_by_ID], references: [Intern_ID])
+  picked_up_by_ID String?
+  picked_up_by    Intern? @relation("picked_up_shift_requests", fields: [picked_up_by_ID], references: [id])
 
-  shift_ID String
-  shift    Scheduled_day @relation(fields: [shift_ID], references: [shift_ID])
+  attendances Attendance[]
+}
+
+model Admin {
+  id String @id @default(uuid())
+
+  name  String
+  email String
 }
 
 enum Attendance_status {
@@ -117,26 +106,4 @@ enum Attendance_status {
   PRESENT
   CALLED_OFF
   COVERING_SHIFT
-}
-
-enum Leave_request {
-  PENDING
-  ACCEPTED
-  REJECTED
-}
-
-enum Shift_type {
-  remote
-  office_hours
-  on_site
-}
-
-enum Work_day {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
 }
