@@ -12,15 +12,15 @@
         type: String,
         default: null
     },
-    needsCheckIn: {
+    checkedIn: {
         type: Boolean,
         default: false
     }
     
 })
 
-const getAvatarRingStyle = (needsCheckIn) => {
-  return needsCheckIn ? 'outline: 2.5px solid var(--color-brand-orange); outline-offset: 3px;' : ''
+const getAvatarRingStyle = (checkedIn) => {
+  return checkedIn ? 'outline: 2.5px solid var(--color-brand-orange); outline-offset: 3px;' : ''
 
 }
 
@@ -33,17 +33,17 @@ const getStatusDotStyle = (status) => {
 </script>
 
 <template>
-    <div class="relative shrink-0">
+    <div class="relative shrink-0 max-h-[50px] max-w-[50px]">
         <div
             class="rounded-full bg-[#d4d4d4] flex items-center justify-center text-white overflow-hidden"
             style="width: 48px; height: 48px; font-size: 20px;"
-            :style="getAvatarRingStyle(needsCheckIn)">
+            :style="getAvatarRingStyle(checkedIn)">
             <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" />
             <span v-else>{{ initials }}</span>
         </div>
         <span
             v-if="status"
-            class="absolute bottom-0.5 -right-1 w-3 h-3 rounded-full"
+            class="absolute bottom-0 -right-1 w-3 h-3 rounded-full"
             :style="getStatusDotStyle(status)"
         ></span>
     </div>
