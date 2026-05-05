@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
     const query = getQuery(event)
 
-    const user = prisma.intern.create({
+    const user = prisma.user.create({
         data: {
             user_name: query.user_name as string,
             user_email: query.user_email as string,
@@ -11,6 +11,6 @@ export default defineEventHandler(async (event) => {
         },
     })
 
-    console.log("intern created")
+    console.log("user created")
     return user
 })

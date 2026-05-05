@@ -1,21 +1,14 @@
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event) => { //Got rid of defineEventHandler import
+    // Removed parameter checking
     const userID = event.context.params?.user_id as string
 
-    if (!userID) {
-        throw createError({
-            statusCode: 400,
-            statusMessage: "User ID is required"
-        })
-    }
+    const now = new Date()
 
-    const curr_date = Date.now()
-
+    // Custom types
     type Shift = {
         datetime: string
         site: string
         attendance_status: string | null
-        clock_in_time?: string | null
-        clock_out_time?: string | null
     }
 
     const previous_shifts: Shift[] = []
@@ -39,14 +32,20 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    schedules.forEach((shift) => {
-        const shiftTime = new Date(shift.date).getTime()
+    schedules.forEach(shift => {
 
-        const attendance = attendanceRecords.find((record) => {
+        const shiftDate = new Date(shift.date)
+
+        const attendance = attendanceRecords.find(record => {
             if (!record.clock_in_time) return false
 
-            const clockIn = new Date(record.clock_in_time).getTime()
-            return Math.abs(clockIn - shiftTime) < 86400000
+            const recordDate = new Date(record.clock_in_time)
+
+            return (
+                recordDate.getFullYear() === shiftDate.getFullYear() &&
+                recordDate.getMonth() === shiftDate.getMonth() &&
+                recordDate.getDate() === shiftDate.getDate()
+            )
         })
 
         let attendance_status: string | null = null
@@ -56,12 +55,12 @@ export default defineEventHandler(async (event) => {
         }
 
         const shiftData: Shift = {
-            datetime: new Date(shiftTime).toISOString(),
+            datetime: shiftDate.toISOString(),
             site: shift.site_ID,
             attendance_status
         }
 
-        if (shiftTime < curr_date) {
+        if (shiftDate < now) {
             previous_shifts.push({
                 ...shiftData,
                 attendance_status: attendance_status || "absent"
