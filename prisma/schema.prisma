@@ -18,20 +18,21 @@ model Intern {
   next_shift_ID String?
   next_shift    Scheduled_day? @relation("next_shift", fields: [next_shift_ID], references: [id])
 
-  site_manager_ID String?
-  site_manager    Site_Manager? @relation(fields: [site_manager_ID], references: [id])
+  site_manager Site_Manager? @relation("site_manager_profile")
 
   attendance_history Attendance[]
+
+  created_shift_requests   Shift_Request[] @relation("created_shift_requests")
+  picked_up_shift_requests Shift_Request[] @relation("picked_up_shift_requests")
 }
 
 model Site_Manager {
   id String @id @default(uuid())
 
-  name  String
-  email String
+  intern_ID String @unique
+  intern    Intern @relation("site_manager_profile", fields: [intern_ID], references: [id])
 
   locations Location[]
-  interns  Intern[]
 }
 
 model Location {
@@ -43,7 +44,7 @@ model Location {
   attendance_code String?
   code_expires_at DateTime?
 
-  managers Site_Manager[]
+  managers       Site_Manager[]
   scheduled_days Scheduled_day[]
 }
 
@@ -53,7 +54,7 @@ model Scheduled_day {
   start_time DateTime
   end_time   DateTime
 
-  site_ID String
+  site_ID  String
   location Location @relation(fields: [site_ID], references: [id])
 
   attendance Attendance[]
@@ -71,7 +72,7 @@ model Attendance {
   internID String
   intern   Intern @relation(fields: [internID], references: [id])
 
-  shift_ID String
+  shift_ID      String
   scheduled_day Scheduled_day @relation(fields: [shift_ID], references: [id])
 
   shift_request_ID String?
@@ -83,6 +84,12 @@ model Shift_Request {
 
   reason    String?
   createdAt DateTime @default(now())
+
+  created_by_ID String
+  created_by    Intern @relation("created_shift_requests", fields: [created_by_ID], references: [id])
+
+  picked_up_by_ID String?
+  picked_up_by    Intern? @relation("picked_up_shift_requests", fields: [picked_up_by_ID], references: [id])
 
   attendances Attendance[]
 }
