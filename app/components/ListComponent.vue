@@ -74,16 +74,6 @@ function handleClick(item: ListItem) {
   emit('item-click', item)
 }
 
-function getStatusDotStyle(status: string) {
-  if (status === 'green') return 'background: var(--color-success); border: 2px solid white;'
-  if (status === 'yellow') return 'background: var(--color-warning); border: 2px solid white;'
-  if (status === 'red') return 'background: var(--color-error); border: 2px solid white;'
-  return 'background: #d1d5db; border: 2px solid white;'
-}
-
-function getAvatarRingStyle(needsCheckIn?: boolean) {
-  return needsCheckIn ? 'outline: 2.5px solid var(--color-brand-orange); outline-offset: 3px;' : ''
-}
 </script>
 
 <template>
@@ -125,23 +115,12 @@ function getAvatarRingStyle(needsCheckIn?: boolean) {
             @keydown.space.prevent="handleClick(item)"
           >
 
-            <slot name="icon" :item="item">
-              <div class="relative shrink-0">
-                <div
-                  class="rounded-full bg-slate-300 flex items-center justify-center font-semibold text-white overflow-hidden"
-                  style="width: 52px; height: 52px; font-size: 18px;"
-                  :style="getAvatarRingStyle(item.needsCheckIn)"
-                >
-                  <img v-if="item.avatarUrl" :src="item.avatarUrl" class="w-full h-full object-cover" />
-                  <span v-else>{{ item.initials }}</span>
-                </div>
-                <span
-                  v-if="item.status"
-                  class="absolute bottom-0.5 -right-1 w-3 h-3 rounded-full"
-                  :style="getStatusDotStyle(item.status)"
-                ></span>
-              </div>
-            </slot>
+            <AvatarComponent 
+            :avatar-url="item.avatarUrl"
+            :initials="item.initials"
+            :status="item.status"
+            :checked-in="item.needsCheckIn"
+            />
 
             <div class="flex flex-col flex-1 min-w-0">
               <slot name="label" :item="item">
@@ -177,24 +156,13 @@ function getAvatarRingStyle(needsCheckIn?: boolean) {
           @keydown.enter="handleClick(item)"
           @keydown.space.prevent="handleClick(item)"
         >
-
-          <slot name="icon" :item="item">
-            <div class="relative shrink-0">
-              <div
-                class="rounded-full bg-slate-300 flex items-center justify-center font-semibold text-white overflow-hidden"
-                style="width: 52px; height: 52px; font-size: 18px;"
-                :style="getAvatarRingStyle(item.needsCheckIn)"
-              >
-                <img v-if="item.avatarUrl" :src="item.avatarUrl" class="w-full h-full object-cover" />
-                <span v-else>{{ item.initials }}</span>
-              </div>
-              <span
-                v-if="item.status"
-                class="absolute bottom-0.5 -right-1 w-3 h-3 rounded-full"
-                :style="getStatusDotStyle(item.status)"
-              ></span>
-            </div>
-          </slot>
+        
+        <AvatarComponent 
+        :avatar-url="item.avatarUrl"
+        :initials="item.initials"
+        :status="item.status"
+        :checked-in="item.needsCheckIn"
+        />
 
           <div class="flex flex-col flex-1 min-w-0">
             <slot name="label" :item="item">
