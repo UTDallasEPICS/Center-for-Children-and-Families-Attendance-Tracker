@@ -28,4 +28,9 @@ export default defineNuxtConfig({
             { name: "Roboto", weights: [400, 500] },
         ],
     },
+
+    colorMode: {
+        preference: 'light',
+        fallback: 'light'
+    },
 })

@@ -24,3 +24,7 @@
 @utility label-optical {
   transform: translateY(1px);
 }
+
+:root {
+  color-scheme: light;
+}

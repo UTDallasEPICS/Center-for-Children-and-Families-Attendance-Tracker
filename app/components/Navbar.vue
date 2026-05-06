@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const isOpen = ref(false)
 import type { NavigationMenuItem } from '@nuxt/ui'
-
+const route = useRoute()
 const items = ref<NavigationMenuItem[]>([
   { label: 'Dashboard', to: '/' },
   { label: 'Messages', to: '/' },
@@ -10,6 +10,11 @@ const items = ref<NavigationMenuItem[]>([
   { label: 'Intern Information', to: '/' },
   { label: 'Participant Information', to: '/' }
 ])
+
+watch(() => route.path, () => {
+  isOpen.value = false
+})
+
 </script>
 
 <template>
@@ -77,7 +82,7 @@ const items = ref<NavigationMenuItem[]>([
   </Teleport>
 
 
- <div class="w-full bg-white shadow sticky top-0 z-50 hidden md:block">
+ <div class="w-full bg-white shadow sticky top-0 z-50 hidden md:block ">
     <UNavigationMenu
       :items="items"
       color="neutral"
