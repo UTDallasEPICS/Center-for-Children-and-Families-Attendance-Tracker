@@ -19,6 +19,7 @@ export default defineNuxtConfig({
 
     devtools: { enabled: true },
     css: ["~/assets/css/main.css"],
+    ui: {colorMode: false},
     components: true,
 
     modules: ["@nuxt/eslint", "@nuxt/ui"],
@@ -27,10 +28,5 @@ export default defineNuxtConfig({
         families: [
             { name: "Roboto", weights: [400, 500] },
         ],
-    },
-
-    colorMode: {
-        preference: 'light',
-        fallback: 'light'
     },
 })
