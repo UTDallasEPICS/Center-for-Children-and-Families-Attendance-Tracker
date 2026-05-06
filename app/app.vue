@@ -1,12 +1,8 @@
 <template>
-
-    <UApp>
-        <main>
-            
+    <UApp>  
         <Navbar/>
-        <div class="light">
-        <NuxtPage/>
-        </div>
+        <main>
+          <NuxtPage/>
         </main>
     </UApp>
 </template>
