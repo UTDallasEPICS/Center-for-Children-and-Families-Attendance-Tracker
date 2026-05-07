@@ -22,17 +22,39 @@ export default defineEventHandler(async (event) => {
   }
 
   const now = new Date()
+
+  const activeShift = await prisma.scheduled_day.findFirst({
+    where: {
+      site_ID: site_id,
+      start_time: {
+        lte: now
+      },
+      end_time: {
+        gte: now
+      }
+    },
+    orderBy: {
+      start_time: "asc"
+    }
+  })
+
+  if (!activeShift) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "No active scheduled shift found for this site"
+    })
+  }
+
   const expired = !site.code_expires_at || now >= site.code_expires_at
 
   let code = site.attendance_code
 
   if (!code || expired) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
     code = Array.from({ length: 6 }, () =>
       chars[Math.floor(Math.random() * chars.length)]
     ).join("")
-
-    const code_expires_at = new Date(now.getTime() + 15 * 60000)
 
     await prisma.location.update({
       where: {
@@ -40,7 +62,7 @@ export default defineEventHandler(async (event) => {
       },
       data: {
         attendance_code: code,
-        code_expires_at
+        code_expires_at: activeShift.end_time
       }
     })
   }

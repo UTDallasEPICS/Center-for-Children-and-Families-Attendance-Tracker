@@ -1,5 +1,7 @@
 export default defineEventHandler(async (event) => {
   const site_id = event.context.params?.site_id as string
+  const query = getQuery(event)
+  const scheduled_day_id = query.scheduled_day_id as string
 
   if (!site_id) {
     throw createError({
@@ -8,41 +10,38 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (!scheduled_day_id) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "scheduled_day_id query parameter is required"
+    })
+  }
+
+  const scheduledDay = await prisma.scheduled_day.findUnique({
+    where: {
+      id: scheduled_day_id
+    }
+  })
+
+  if (!scheduledDay || scheduledDay.site_ID !== site_id) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Scheduled day not found for this site"
+    })
+  }
+
   const interns = await prisma.intern.findMany({
     where: {
-      OR: [
-        {
-          next_shift: {
-            site_ID: site_id
-          }
-        },
-        {
-          attendance_history: {
-            some: {
-              scheduled_day: {
-                site_ID: site_id
-              }
-            }
-          }
+      attendance_history: {
+        some: {
+          shift_ID: scheduled_day_id
         }
-      ]
+      }
     },
     include: {
-      next_shift: {
-        include: {
-          location: true
-        }
-      },
-      site_manager: {
-        include: {
-          locations: true
-        }
-      },
       attendance_history: {
         where: {
-          scheduled_day: {
-            site_ID: site_id
-          }
+          shift_ID: scheduled_day_id
         },
         orderBy: {
           clock_in_time: "desc"
@@ -59,6 +58,16 @@ export default defineEventHandler(async (event) => {
               picked_up_by: true
             }
           }
+        }
+      },
+      next_shift: {
+        include: {
+          location: true
+        }
+      },
+      site_manager: {
+        include: {
+          locations: true
         }
       }
     }
