@@ -14,6 +14,9 @@ export default defineNuxtConfig({
         public: {
             dbURL: process.env.DATABASE_URL,
             redcapApiUrl: process.env.REDCAP_API_URL,
+            testInternId: process.env.TEST_INTERN_ID,
+            testSiteManagerId: process.env.TEST_SITE_MANAGER_ID,
+            testAdminId: process.env.TEST_ADMIN_ID,
         },
     },
 
