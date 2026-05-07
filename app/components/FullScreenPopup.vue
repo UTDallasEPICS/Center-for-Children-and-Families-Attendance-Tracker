@@ -54,5 +54,6 @@ watch(isOpen, (val) => {
 
 onUnmounted(() => {
   document.body.style.overflow = ""
+  
 })
 </script>
