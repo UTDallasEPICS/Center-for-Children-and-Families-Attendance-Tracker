@@ -17,6 +17,7 @@
         "@fullcalendar/daygrid": "^6.1.15",
         "@nuxt/eslint": "^1.15.2",
         "@nuxt/fonts": "^0.14.0",
+        "@nuxt/ui": "^4.7.0",
         "@prisma/adapter-better-sqlite3": "^7.1.0",
         "@prisma/client": "^7.1.0",
         "@tailwindcss/postcss": "^4.1.17",
