@@ -17,7 +17,6 @@ const onBeforeInput = (e) => {
   const current = props.modelValue || ''
   const incoming = e.data
 
-  // allow deletes/backspace
   if (!incoming) return
 
   if (current.length >= props.maxLength) {
@@ -38,7 +37,6 @@ const autoResize = (el) => {
 const onInput = (e) => {
   let value = e.target.value
 
-  // enforce limit only if maxLength exists
   if (props.maxLength !== null) {
     value = value.slice(0, props.maxLength)
   }
@@ -60,12 +58,10 @@ const onInput = (e) => {
     rows="1"
   />
 
-  <!-- counter pinned to bottom right -->
   <div class="absolute bottom-1 right-1 text-xs text-neutral-400 px-2 pb-1">
-    <span>{{ charCount }} / {{ props.maxLength }}</span>
+    <span v-if="props.maxLength !== null">{{ charCount }} / {{ props.maxLength }}</span>
   </div>
 
 </div>
-
 
 </template>
