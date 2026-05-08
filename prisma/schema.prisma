@@ -67,7 +67,7 @@ model Attendance {
 
   clock_in_time  DateTime?
   clock_out_time DateTime?
-  status         Attendance_status @default(ABSENT)
+  status         Attendance_status? @default(ABSENT)
 
   internID String
   intern   Intern @relation(fields: [internID], references: [id])
