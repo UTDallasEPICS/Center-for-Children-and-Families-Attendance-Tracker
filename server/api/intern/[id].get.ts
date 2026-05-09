@@ -2,15 +2,18 @@ export default defineEventHandler(async (event) => {
     
    const { id } = event.context.params
 
-    if (id) {
-        const user = await prisma.user.findUnique({
-            where: {
-                ID: id,
-            },
+    if (!id) {
+        throw createError({
+        statusCode: 400,
+        statusMessage: "Missing required query parameter: id",
         })
-
-        return user
     }
+
+  const user = await prisma.user.findUnique({
+        where: {
+        ID: id as string,
+        },
+    })
 
     if (!user) {
         throw createError({
