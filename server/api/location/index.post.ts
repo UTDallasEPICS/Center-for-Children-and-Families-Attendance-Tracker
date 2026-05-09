@@ -1,15 +1,15 @@
 import { prisma } from "../../utils/prisma"
 
 export default defineEventHandler(async (event) => {
-    const query = getQuery(event)
+    const body = await readBody(event)
 
     const location = await prisma.location.create({
         data: {
-            location_name: query.location_name as string,
-            address: query.address as string,
-            operation_days: query.operation_days as any,
-            open_time: Number(query.close_time),
-            close_time: Number(query.close_time),
+            location_name: body.location_name,
+            address: body.address,
+            operation_days: body.operation_days,
+            open_time: Number(body.open_time),
+            close_time: Number(body.close_time),
             attendance_code: 0,
         },
     })

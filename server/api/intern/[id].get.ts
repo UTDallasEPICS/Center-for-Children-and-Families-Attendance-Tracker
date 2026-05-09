@@ -1,32 +1,22 @@
 export default defineEventHandler(async (event) => {
-    const query = getQuery(event)
+    
+   const { id } = event.context.params
 
-    if (query.ID) {
+    if (id) {
         const user = await prisma.user.findUnique({
             where: {
-                ID: query.ID as string,
+                ID: id,
             },
         })
+
         return user
     }
 
-    if (query.user_name) {
-        const user = await prisma.user.findMany({
-            where: {
-                user_name: { startsWith: query.user_name as string },
-            },
-            include: {
-                location: true,
-            },
+    if (!user) {
+        throw createError({
+            statusCode: 404,
+            statusMessage: 'User not found',
         })
-        console.log("filtered users: ", user)
-        return user
     }
 
-    const user = await prisma.user.findMany({
-        include: {
-            location: true,
-        },
-    })
-    return user
 })

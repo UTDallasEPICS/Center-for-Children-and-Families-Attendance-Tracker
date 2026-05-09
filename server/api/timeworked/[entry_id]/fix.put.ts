@@ -9,23 +9,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  const { clock_in_time, clock_out_time, reason } = body
+  const { clock_in_time, clock_out_time } = body
 
-  if (!clock_in_time || !clock_out_time || !reason) {
+  if (!clock_in_time || !clock_out_time) {
     throw createError({
       statusCode: 400,
-      statusMessage: "clock_in_time, clock_out_time, and reason are required"
-    })
-  }
-
-  const existing = await prisma.attendance.findUnique({
-    where: { id: entry_id }
-  })
-
-  if (!existing) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Attendance record not found"
+      statusMessage: "clock_in_time and clock_out_time are required"
     })
   }
 
@@ -34,7 +23,6 @@ export default defineEventHandler(async (event) => {
     data: {
       clock_in_time: new Date(clock_in_time),
       clock_out_time: new Date(clock_out_time),
-      reason,
       status: "PRESENT"
     }
   })

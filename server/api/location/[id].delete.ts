@@ -1,16 +1,18 @@
 export default defineEventHandler(async (event) => {
-    //delete
-    const query = getQuery(event)
+    const { id } = event.context.params as { id: string }
 
-    async function deleteLocation(id: string) {
-        const deleteLocation = await prisma.location.delete({
-            where: {
-                location_ID: id,
-            },
+    if (!id) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: "Missing location id",
         })
     }
 
-    return prisma.location.delete({
-        where: { location_ID: query.ID as string },
+    const deletedLocation = await prisma.location.delete({
+        where: {
+            location_ID: id,
+        },
     })
+
+    return deletedLocation
 })

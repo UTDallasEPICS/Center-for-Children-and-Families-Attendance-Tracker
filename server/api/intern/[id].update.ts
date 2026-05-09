@@ -1,10 +1,16 @@
 export default defineEventHandler(async (event) => {
-    const query = getQuery(event)
-    const body = await readBody(event) // body should be JSON with fields to update
+    const { id } = event.context.params as { id: string }
+    const body = await readBody(event) // JSON fields
 
-    // Update user
+    if (!id) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: "Missing user ID in route parameter",
+        })
+    }
+
     const user = await prisma.user.update({
-        where: { ID: query.ID as string },
+        where: { ID: id },
         data: body,
     })
 

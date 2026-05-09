@@ -1,32 +1,27 @@
 export default defineEventHandler(async (event) => {
     const query = getQuery(event)
 
+    //filter object
+    const where: any = {}
+
     if (query.ID) {
-        const user = await prisma.intern.findUnique({
-            where: {
-                ID: query.ID as string,
-            },
-        })
-        return user
+        where.ID = query.ID as string
     }
 
     if (query.user_name) {
-        const user = await prisma.intern.findMany({
-            where: {
-                user_name: { startsWith: query.user_name as string },
-            },
-            include: {
-                location: true,
-            },
-        })
-        console.log("filtered intern: ", user)
-        return intern
+        where.user_name = {
+            startsWith: query.user_name as string,
+        }
     }
 
-    const user = await prisma.intern.findMany({
+    // Fetch interns (all or filtered)
+    const interns = await prisma.intern.findMany({
+        where: Object.keys(where).length ? where : undefined,
         include: {
             location: true,
         },
     })
-    return user
+
+    console.log("interns:", interns)
+    return interns
 })
