@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@nuxt/ui";
 
 @theme {
   --font-sans: "Roboto", sans-serif;
@@ -22,4 +23,8 @@
 /* Optical correction for inline label text next to icons/buttons */
 @utility label-optical {
   transform: translateY(1px);
+}
+
+:root {
+  color-scheme: light;
 }
