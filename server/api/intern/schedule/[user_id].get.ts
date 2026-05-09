@@ -2,71 +2,39 @@ export default defineEventHandler(async (event) => { //Got rid of defineEventHan
     // Removed parameter checking
     const userID = event.context.params?.user_id as string
 
-    const now = new Date()
-
-    // Custom types
-    type Shift = {
-        datetime: string
-        site: string
-        attendance_status: string | null
+    if (!userID) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: "User ID is required"
+        })
     }
 
-    const previous_shifts: Shift[] = []
-    const future_shifts: Shift[] = []
-
-    const schedules = await prisma.scheduled_day.findMany({
-        where: {
-            userID: userID
-        },
-        include: {
-            site: true
-        },
-        orderBy: {
-            date: "asc"
-        }
-    })
+    const now = Date.now()
 
     const attendanceRecords = await prisma.attendance.findMany({
-        where: {
-            userID: userID
-        }
+        where: { userID },
+        orderBy: { clock_in_time: "asc" }
     })
 
-    schedules.forEach(shift => {
+    const previous_shifts = []
+    const future_shifts = []
 
-        const shiftDate = new Date(shift.date)
+    attendanceRecords.forEach((record) => {
+        const shiftTime = record.clock_in_time
+            ? new Date(record.clock_in_time).getTime()
+            : null
 
-        const attendance = attendanceRecords.find(record => {
-            if (!record.clock_in_time) return false
-
-            const recordDate = new Date(record.clock_in_time)
-
-            return (
-                recordDate.getFullYear() === shiftDate.getFullYear() &&
-                recordDate.getMonth() === shiftDate.getMonth() &&
-                recordDate.getDate() === shiftDate.getDate()
-            )
-        })
-
-        let attendance_status: string | null = null
-
-        if (attendance) {
-            attendance_status = attendance.status.toLowerCase()
+        const shift = {
+            datetime: new Date(shiftTime).toISOString(),
+            attendance_status: record.status?.toLowerCase() ?? null,
+            clock_in_time: record.clock_in_time,
+            clock_out_time: record.clock_out_time
         }
 
-        const shiftData: Shift = {
-            datetime: shiftDate.toISOString(),
-            site: shift.site_ID,
-            attendance_status
-        }
-
-        if (shiftDate < now) {
-            previous_shifts.push({
-                ...shiftData,
-                attendance_status: attendance_status || "absent"
-            })
+        if (shiftTime < now) {
+            previous_shifts.push(shift)
         } else {
-            future_shifts.push(shiftData)
+            future_shifts.push(shift)
         }
     })
 

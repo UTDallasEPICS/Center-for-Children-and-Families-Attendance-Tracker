@@ -1,44 +1,17 @@
 export default defineEventHandler(async (event) => {
 
-    // Get userID from route param
     const userID = event.context.params?.user_id as string
 
-    // Start and end of today 
-    const startOfDay = new Date()
-    startOfDay.setHours(0, 0, 0, 0)
-
-    const endOfDay = new Date()
-    endOfDay.setHours(23, 59, 59, 999)
-
-    // Find today's attendance record
-    const attendance = await prisma.attendance.findFirst({
-        where: {
-            userID: userID,
-            clock_in_time: {
-                gte: startOfDay,
-                lte: endOfDay
-            }
-        },
-        orderBy: {
-            clock_in_time: "desc"
+    const intern = await prisma.intern.findUnique({
+        where: { id: userID },
+        include: {
+            next_shift: true
         }
     })
 
-    // If no record exists, return null values
-    if (!attendance) {
-        return {
-            checkin_time: null,
-            checkout_time: null
-        }
-    }
-
     return {
-        checkin_time: attendance.clock_in_time
-            ? attendance.clock_in_time.toISOString()
-            : null,
-
-        checkout_time: attendance.clock_out_time
-            ? attendance.clock_out_time.toISOString()
-            : null
+        shift: intern?.next_shift ?? null,
+        start_time: intern?.next_shift?.start_time ?? null,
+        end_time: intern?.next_shift?.end_time ?? null
     }
 })

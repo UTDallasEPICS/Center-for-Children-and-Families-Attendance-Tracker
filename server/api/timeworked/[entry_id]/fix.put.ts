@@ -18,41 +18,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const existing = await prisma.attendance.findUnique({
-    where: {
-      id: entry_id
-    }
-  })
-
-  if (!existing) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Attendance record not found"
-    })
-  }
-
   const updated = await prisma.attendance.update({
-    where: {
-      id: entry_id
-    },
+    where: { id: entry_id },
     data: {
       clock_in_time: new Date(clock_in_time),
       clock_out_time: new Date(clock_out_time),
       status: "PRESENT"
-    },
-    include: {
-      intern: true,
-      scheduled_day: {
-        include: {
-          location: true
-        }
-      },
-      shift_request: {
-        include: {
-          created_by: true,
-          picked_up_by: true
-        }
-      }
     }
   })
 
