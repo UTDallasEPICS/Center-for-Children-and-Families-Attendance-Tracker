@@ -15,6 +15,6 @@ export default defineEventHandler(async (event) => {
         },
     })
 
-    console.log("intern created")
+    console.log("user created")
     return user
 })

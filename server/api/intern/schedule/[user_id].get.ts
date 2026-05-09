@@ -1,4 +1,5 @@
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event) => { //Got rid of defineEventHandler import
+    // Removed parameter checking
     const userID = event.context.params?.user_id as string
 
     if (!userID) {
