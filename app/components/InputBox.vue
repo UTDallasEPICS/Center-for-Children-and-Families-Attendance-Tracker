@@ -1,5 +1,6 @@
 <script setup>
 
+import { computed, toRef } from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -37,6 +38,9 @@ const autoResize = (el) => {
 const onInput = (e) => {
   let value = e.target.value
 
+  
+  emit('update:modelValue', value)
+  
   if (props.maxLength !== null) {
     value = value.slice(0, props.maxLength)
   }
@@ -45,10 +49,12 @@ const onInput = (e) => {
 
   autoResize(e.target)
 }
+
+
 </script>
 
 <template>
-<div class="relative flex rounded-md border border-neutral-200 pl-[5px] bg-white w-full max-w-full min-h-[40px]">    
+<div class="relative flex rounded-md border border-neutral-200 pr-[5px]pl-[5px] pb-5  bg-white w-full max-w-full min-h-[40px]">    
    <textarea
     class="w-full min-h-9 font-[var(--font-sans)] focus:outline-none resize-none overflow-hidden pt-[5px] px-2"
     placeholder="Type here..."
