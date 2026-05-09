@@ -15,8 +15,7 @@ const emit = defineEmits<{
     <Search :size="16" class="shrink-0 text-gray-400" />
     <input
       type="text"
-      class="flex-1 outline-none bg-transparent text-sm"
-      style="color: var(--color-text-main); font-family: 'Roboto', sans-serif; font-weight: 400;"
+      class="flex-1 outline-none bg-transparent text-sm text-color-text-main font-sans font-normal"
       :placeholder="placeholder || 'Search child by name, DOB or ID.'"
       @input="emit('search', ($event.target as HTMLInputElement).value)"
     />
