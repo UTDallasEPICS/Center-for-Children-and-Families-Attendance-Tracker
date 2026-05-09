@@ -27,9 +27,6 @@ export default defineEventHandler(async (event) => {
     where: {
       site_ID: site_id,
       start_time: {
-        lte: now
-      },
-      end_time: {
         gte: now
       }
     },
