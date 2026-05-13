@@ -4,6 +4,7 @@ import type { SelectMenuItem } from '@nuxt/ui'
 const props = defineProps<{
   current: SelectMenuItem
   items: SelectMenuItem[]
+  widthClass?: string
 }>()
 
 const emit = defineEmits<{
@@ -12,7 +13,7 @@ const emit = defineEmits<{
 
 const selected = computed({
   get: () => props.current,
-  set: (val) => emit('update:current', val)
+  set: (value) => emit('update:current', value)
 })
 </script>
 
@@ -20,9 +21,6 @@ const selected = computed({
   <USelectMenu
     v-model="selected"
     :items="items"
-    :search-input="false"
-    value-key="id"
-    placeholder="Select"
-    class="w-48"
+    :class="widthClass"
   />
 </template>

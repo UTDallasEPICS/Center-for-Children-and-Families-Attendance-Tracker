@@ -4,7 +4,7 @@
     :aria-valuenow="value"
     :aria-valuemin="0"
     :aria-valuemax="max"
-    class="h-1 w-full rounded-full bg-neutral-200 overflow-hidden"
+    class="h-2  w-full rounded-full bg-neutral-200 overflow-hidden"
   >
     <div
       class="h-full rounded-full bg-brand-orange transition-[width] duration-300"
