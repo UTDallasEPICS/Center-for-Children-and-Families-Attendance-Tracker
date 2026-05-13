@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight} from 'lucide-vue-next'
 
 const current = ref(new Date())
 
-const {data, pending, error } = await useFetch('/api/intern/schedule/${user_id}')
+const {data, pending, error } = await useFetch('/api/intern/schedule/67')
 
 const selectedDay = ref<Date>(new Date())
   
@@ -214,10 +214,10 @@ const shiftsByDate = computed(() => {
 
       <div class="flex gap-9">
         <button @click="prevMonth" class="cursor-pointer text-lg hover:text-gray-00">  
-          <ChevronLeft/>
+          <ChevronLeft class="w-12 h-12" />
         </button>
         <button @click="nextMonth" class="cursor-pointer text-lg hover:text-gray-600">
-          <ChevronRight/>
+          <ChevronRight class="w-12 h-12"/>
         </button>
       </div>
     </div>
@@ -226,13 +226,13 @@ const shiftsByDate = computed(() => {
     <table class="w-full border-collapse mb-2">
       <thead>
         <tr class="text-[rgb(115,115,115)] text-3xl ">
-          <th class="w-11 h-5 font-normal">Sun</th>
-          <th class="w-11 h-5 font-normal">Mon</th>
-          <th class="w-11 h-5 font-normal">Tue</th>
-          <th class="w-11 h-5 font-normal">Wed</th>
-          <th class="w-11 h-5 font-normal">Thu</th>
-          <th class="w-11 h-5 font-normal">Fri</th>
-          <th class="w-11 h-5 font-normal">Sat</th>
+          <th class="w-22 h-5 font-normal">Sun</th>
+          <th class="w-22 h-5 font-normal">Mon</th>
+          <th class="w-22 h-5 font-normal">Tue</th>
+          <th class="w-22 h-5 font-normal">Wed</th>
+          <th class="w-22 h-5 font-normal">Thu</th>
+          <th class="w-22 h-5 font-normal">Fri</th>
+          <th class="w-22 h-5 font-normal">Sat</th>
         </tr>
       </thead>
       </table>
@@ -240,7 +240,7 @@ const shiftsByDate = computed(() => {
 <div
   v-for="(day, i) in calendarDays"
   :key="i"
-  class="text-base text-gray-900 w-23 h-23 text-center relative hover:bg-gray-200 hover:rounded-lg cursor-pointer flex items-center justify-center cursor-pointer rounded-lg transition"
+  class="text-3xl text-gray-900 w-22 h-22 text-center relative hover:bg-gray-200 hover:rounded-lg cursor-pointer flex items-center justify-center cursor-pointer rounded-lg transition"
   :class="selectedDay === day ? 'bg-orange-100 rounded-full' : ''"
   @click="selectNewDay(day)"
 >

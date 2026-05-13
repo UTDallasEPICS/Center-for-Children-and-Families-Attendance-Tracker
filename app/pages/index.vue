@@ -32,6 +32,10 @@
 >
   {{ checkedIn ? 'not checked in' : 'checked in' }}
 </button>
+<PopupModals v-if="showPopup" 
+  :type="actionType"
+  @close="showPopup = false"
+/>
 
     <div class="pt-15 pl-5 flex items-center text-nuetral-900 text-3xl gap-2">
       Attendence Progress

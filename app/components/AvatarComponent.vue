@@ -20,7 +20,7 @@
 })
 
 const getAvatarRingStyle = (checkedIn) => {
-  return checkedIn ? 'outline: 2.5px solid var(--color-brand-orange); outline-offset: 3px;' : ''
+  return checkedIn ? '' : 'outline: 2.5px solid var(--color-brand-orange); outline-offset: 3px;'
 
 }
 
