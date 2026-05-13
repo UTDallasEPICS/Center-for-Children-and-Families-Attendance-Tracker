@@ -33,10 +33,9 @@ const getStatusDotStyle = (status) => {
 </script>
 
 <template>
-    <div class="relative shrink-0 max-h-[50px] max-w-[50px]">
+    <div class="relative shrink-0 max-h-[80px] max-w-[80px]">
         <div
-            class="rounded-full bg-[#d4d4d4] flex items-center justify-center text-white overflow-hidden"
-            style="width: 48px; height: 48px; font-size: 20px;"
+            class="rounded-full bg-[#d4d4d4] flex items-center justify-center text-white overflow-hidden min-w-[48px] min-h-[48px] max-h-[80px] max-w-[80px]"
             :style="getAvatarRingStyle(checkedIn)">
             <img v-if="avatarUrl" :src="avatarUrl" class="w-full h-full object-cover" />
             <span v-else>{{ initials }}</span>
