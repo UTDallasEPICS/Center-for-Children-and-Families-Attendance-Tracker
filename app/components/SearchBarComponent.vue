@@ -11,7 +11,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex items-center gap-2 px-4 bg-white border border-gray-200 rounded-lg h-8">
+  <div class="flex items-center gap-2 px-4 bg-white border border-gray-200 rounded-lg h-12">
     <Search :size="16" class="shrink-0 text-gray-400" />
     <input
       type="text"

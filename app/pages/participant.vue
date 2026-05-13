@@ -1,5 +1,7 @@
 <!-- pages/participant.vue -->
-<script setup lang="ts">const items = [
+<script setup lang="ts">
+
+const items = [
   { id: 1, label: 'Prairie Creek Branch Library' },
   { id: 2, label: 'Bachman Lake Library' },
   { id: 3, label: 'Hampton-Illinois Branch Library' }
@@ -139,6 +141,9 @@ const groups: ListGroup[] = [
       <span>2</span>
     </div>
 
+    <div>
+
+    </div>
 
 
     

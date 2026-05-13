@@ -1,4 +1,6 @@
 <script setup>
+import { Search } from 'lucide-vue-next'
+
 defineProps({
   count:{
     type: Number,
@@ -20,11 +22,12 @@ const getColor = (attType) => {
 </script>
 
 <template>
-  <div
-    class="w-[78px] h-[52px] pt-1 rounded-md flex flex-col items-center text-sm"
-    :style="getColor(attType)"
-  >
-    {{ count }}
-    <div>{{ attType }}</div>
-  </div>
+<div
+  class="w-[142px] h-[98px] rounded-md flex flex-col items-center justify-center text-xl"
+  :style="getColor(attType)"
+>
+  <div>{{ count }}</div>
+  <div>{{ attType }}</div>
+</div>
+
 </template>
