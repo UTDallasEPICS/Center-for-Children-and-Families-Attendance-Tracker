@@ -20,6 +20,7 @@ const selected = computed({
   <USelectMenu
     v-model="selected"
     :items="items"
+    :search-input="false"
     value-key="id"
     placeholder="Select"
     class="w-48"
