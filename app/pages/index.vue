@@ -7,12 +7,12 @@
         avatar-url="https://i.pravatar.cc/150?img=69"
         initials="JD"
         status="green"
-        :checked-in="true"
+        :checked-in="checkedIn"
       />
       <div class="pt-2 flex flex-col gap-2 "> 
         <div class="relative flex justify-center  w-[200px] h-[60px] rounded-xl bg-white text-neutral-900 text-xl items-center"> 
           <div class=" absolute bottom-0 -left-[7px] bg-white w-4 h-4 rounded-full"> </div>  
-          checked in 
+          {{ checkedIn ? 'not checked in' : 'checked in' }}        
         </div>
       </div>
     </div>
@@ -27,10 +27,11 @@
     </div>  
 
     <button 
-    @click="handleClick"
-    class="bg-[#E87500] ml-5 mr-6 text-white rounded-lg w-[590px] h-24 text-center flex items-center justify-center text-2xl mt-4 hover:bg-neutral-200 transition-colors duration-300">
-        checked in
-    </button>
+  @click="handleClick"
+  class="bg-[#E87500] ml-5 mr-6 text-white rounded-lg w-[590px] h-24 text-center flex items-center justify-center text-2xl mt-4 hover:bg-orange-300 transition-colors duration-300"
+>
+  {{ checkedIn ? 'not checked in' : 'checked in' }}
+</button>
 
     <div class="pt-15 pl-5 flex items-center text-nuetral-900 text-3xl gap-2">
       Attendence Progress
@@ -57,14 +58,22 @@ const formattedDate = new Date().toLocaleDateString('en-US', {
   day: 'numeric'
 })
 
+const checkedIn = ref(false)
+const actionType = ref<'checkin' | 'checkout'>('checkin')
+const showPopup = ref(false)
+
 const handleClick = () => {
-  // decide what action we're about to confirm
- console.log('clicked')
+  console.log('clicked')
+  console.log('checkedIn:', checkedIn.value)
+
   if (checkedIn.value) {
-    actionType.value = 'checkout'
+    console.log('Entering checkout branch')
+    checkedIn.value = false
   } else {
-    actionType.value = 'checkin'
+    console.log('Entering checkin branch')
+    checkedIn.value = true
   }
+
   showPopup.value = true
 }
 

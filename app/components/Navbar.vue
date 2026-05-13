@@ -5,8 +5,8 @@ const route = useRoute()
 const items = ref<NavigationMenuItem[]>([
   { label: 'Dashboard', to: '/' },
   { label: 'Messages', to: '/' },
-  { label: 'Participant Check-In', to: '/' },
-  { label: 'Site Management', to: '/' },
+  { label: 'Participant Check-In', to: '/participant' },
+  { label: 'Site Management', to: '/siteManager' },
   { label: 'Intern Information', to: '/' },
   { label: 'Participant Information', to: '/' }
 ])
@@ -74,8 +74,8 @@ watch(() => route.path, () => {
       />
       <UButton variant="ghost" label="Dashboard" to="/" size="xl" class="!text-black"/>
       <UButton variant="ghost" label="Messages" to="/" size="xl" class="!text-black"/>
-      <UButton variant="ghost" label="Participant Check-In" to="/" size="xl" class="!text-black"/>
-      <UButton variant="ghost" label="Site Management" to="/" size="xl" class="!text-black"/>
+      <UButton variant="ghost" label="Participant Check-In" to="/participant" size="xl" class="!text-black"/>
+      <UButton variant="ghost" label="Site Management" to="/siteManager" size="xl" class="!text-black"/>
       <UButton variant="ghost" label="Intern Information" to="/" size="xl" class="!text-black"/>
       <UButton variant="ghost" label="Participant Information" to="/" size="xl" class="!text-black"/>
     </div>
