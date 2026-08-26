@@ -25,4 +25,4 @@ logs
 
 # Prisma
 dev.db
-app/generated
+prisma/generated
