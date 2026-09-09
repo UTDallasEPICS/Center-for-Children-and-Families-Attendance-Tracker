@@ -36,7 +36,9 @@ Use the matrix below to track requirements throughout the project lifecycle.
 | REQ-F-19  | Admins can view participant and family information across all sites when required for coordination.                                                                | Backlog | 2026F           | —                               | -------------------------------------------- |
 | REQ-F-20  | Admins can configure site-level settings such as schedules, program times, and alert rules.                                                              | Backlog | 2026F           | —                               | -------------------------------------------- |
 | REQ-F-21  | Admins can access system-wide attendance summaries and reports for program evaluation.                                                             | Backlog | 2026F           | —                               | -------------------------------------------- |
-| REQ-F-22  | Admins can access system-wide attendance summaries and reports for program evaluation.                                                             | Backlog | 2026F           | —                               | 
+| REQ-F-22  | Admins can access system-wide attendance summaries and reports for program evaluation.                                                             | Backlog | 2026F           | —                               | -------------------------------------------- |
+| REQ-F-23  | Login page should allow users with a UTD account to login using UTD SSO for tablet.                                                                     | Backlog | 2026F           | [Issue #140](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/140)                               | -------------------------------------------- |
+| REQ-F-24  | Login page should allow users with a UTD account to login using UTD SSO for mobile.                                                                     | Backlog | 2026F           | [Issue #139](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/139)                               |
 
 
 
