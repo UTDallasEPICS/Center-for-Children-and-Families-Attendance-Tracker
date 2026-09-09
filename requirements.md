@@ -15,7 +15,8 @@ Use the matrix below to track requirements throughout the project lifecycle.
 
 | ID        | Description                                                                                      | Status   | Target Semester | Mapping (source / issue)                     |
 | --------- | ------------------------------------------------------------------------------------------------ | -------- | --------------- | -------------------------------------------- |
-| REQ-F-01  | Interns can clock in and clock out for their own shifts.                                                                     | Backlog | 2026F           | `path/to/file`                               |
+| REQ-F-01  | Interns can clock in and clock out for their own shifts.                                                                     | Backlog | 2026F           | `path/to/file`                               |-------- | -------------------------------------------- |
+| REQ-F-02  | Interns can clock in and clock out for their own shifts.                                                                     | Backlog | 2026F           | `path/to/file`                               |
 
 ## 2. Change Log
 
