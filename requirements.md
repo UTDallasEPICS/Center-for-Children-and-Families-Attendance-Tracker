@@ -71,8 +71,7 @@ Use the matrix below to track requirements throughout the project lifecycle.
 | REQ-F-52  | Alerts Page should be able to filter alerts by type and status: Unread, Warning, Requests, All.                                                                  | Backlog | 2026F           | —                               | -------------------------------------------- |
 | REQ-NF-53  | Alerts Page should have an UI for desktop.                                                                  | Backlog | 2026F           | [Issue #135](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/135)                               | -------------------------------------------- |
 | REQ-NF-54  | Alerts Page should have an UI for tablet.                                                                  | Backlog | 2026F           | [Issue #134](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/134)                               | -------------------------------------------- |
-| REQ-F-55  | Frontend/Backend should use Nuxt.js
-                                                                 | Backlog | 2026F           | —                               | -------------------------------------------- |
+| REQ-F-55  | Frontend/Backend should use Nuxt.js                                                                 | Backlog | 2026F           | —                               | -------------------------------------------- |
 | REQ-F-56  | Database should use SQLite                                                                 | Backlog | 2026F           | —                               |
 
 
