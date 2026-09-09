@@ -18,8 +18,7 @@ Use the matrix below to track requirements throughout the project lifecycle.
 | REQ-F-01  | Interns can clock in and clock out for their own shifts.                                                                     | Backlog | 2026F           | `path/to/file`                               |-------- | -------------------------------------------- |
 | REQ-F-02  | Interns can view their own attendance history and total hours.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
 | REQ-F-03  | Interns can check in and check out participants during program sessions at their assigned site.                                                                    | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
-| REQ-F-04  | Interns can view participant and family information needed during active work hours.
- | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
+| REQ-F-04  | Interns can view participant and family information needed during active work hours.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
 | REQ-F-05  | Interns can check in participant and families during work hours.
                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
 | REQ-F-06  | Interns can submit absence requests for upcoming shifts.
