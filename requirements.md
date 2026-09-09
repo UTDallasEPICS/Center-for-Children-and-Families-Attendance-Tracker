@@ -38,7 +38,16 @@ Use the matrix below to track requirements throughout the project lifecycle.
 | REQ-F-21  | Admins can access system-wide attendance summaries and reports for program evaluation.                                                             | Backlog | 2026F           | —                               | -------------------------------------------- |
 | REQ-F-22  | Admins can access system-wide attendance summaries and reports for program evaluation.                                                             | Backlog | 2026F           | —                               | -------------------------------------------- |
 | REQ-F-23  | Login page should allow users with a UTD account to login using UTD SSO for tablet.                                                                     | Backlog | 2026F           | [Issue #140](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/140)                               | -------------------------------------------- |
-| REQ-F-24  | Login page should allow users with a UTD account to login using UTD SSO for mobile.                                                                     | Backlog | 2026F           | [Issue #139](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/139)                               |
+| REQ-F-24  | Login page should allow users with a UTD account to login using UTD SSO for mobile.                                                                     | Backlog | 2026F           | [Issue #139](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/139)                               | -------------------------------------------- |
+| REQ-F-25  | Student Intern Attendance Page should allow interns to check in and check out.                                                                     | Backlog | 2026F           | —                               | -------------------------------------------- |
+| REQ-F-26  | Student Intern Attendance Page should calculate hours worked and log them.                                                                     | Backlog | 2026F           | —                               | -------------------------------------------- |
+| REQ-F-27  | Student Intern Attendance Page should provide calendar component with view of scheduled days and previous days.                                                                     | Backlog | 2026F           | —                               | -------------------------------------------- |
+| REQ-F-28  | Student Intern Attendance Page calendar should show if day is upcoming, attended, or missed.                                                                     | Backlog | 2026F           | —                               | -------------------------------------------- |
+| REQ-F-29  | Student Intern Attendance Page should allow users to request days off using calendar component.                                                                     | Backlog | 2026F           | —                               | -------------------------------------------- |
+| REQ-F-30  | Participant Checkin Page should allow interns to checkin a participating family for that day and location.                                                                     | Backlog | 2026F           | —                               | 
+
+
+
 
 
 
