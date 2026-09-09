@@ -20,7 +20,17 @@ Use the matrix below to track requirements throughout the project lifecycle.
 | REQ-F-03  | Interns can check in and check out participants during program sessions at their assigned site.                                                                    | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
 | REQ-F-04  | Interns can view participant and family information needed during active work hours.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
 | REQ-F-05  | Interns can check in participant and families during work hours.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
-| REQ-F-06  | Interns can submit absence requests for upcoming shifts.                                                                     | Backlog | 2026F           | `path/to/file`                               |
+| REQ-F-06  | Interns can submit absence requests for upcoming shifts.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
+| REQ-F-07  | Site Managers can do everything a Student Worker can do at their assigned site.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
+| REQ-F-08  | Site Managers can view live attendance status for all interns, student workers, and participants at their site.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
+| REQ-F-09  | Site Managers can review attendance history and patterns (for example, repeated absences).                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
+| REQ-F-10  | Site Managers can approve or deny intern and student worker absence requests.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
+| REQ-F-11  | Site Managers can approve or deny intern and student worker absence requests.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
+| REQ-F-12  | Site Managers can receive alerts when participants miss required days or when interns are late or absent.                                                                     | Backlog | 2026F           | `path/to/file`                               | -------------------------------------------- |
+| REQ-F-13  | Site Managers can view and track which parent or guardian dropped off a participant each day.                                                                     | Backlog | 2026F           | `path/to/file`                               |
+
+
+
 
 ## 2. Change Log
 
