@@ -73,8 +73,7 @@ Use the matrix below to track requirements throughout the project lifecycle.
 | REQ-NF-54  | Alerts Page should have an UI for tablet.                                                                  | Backlog | 2026F           | [Issue #134](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/134)                               | -------------------------------------------- |
 | REQ-F-55  | Frontend/Backend should use Nuxt.js
                                                                  | Backlog | 2026F           | —                               | -------------------------------------------- |
-| REQ-F-56  | Database should use SQLite
-                                                                 | Backlog | 2026F           | —                               |
+| REQ-F-56  | Database should use SQLite                                                                 | Backlog | 2026F           | —                               |
 
 
 
