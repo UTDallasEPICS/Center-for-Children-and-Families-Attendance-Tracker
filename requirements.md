@@ -76,8 +76,7 @@ Use the matrix below to track requirements throughout the project lifecycle.
 | REQ-NF-57  | UI for responsive tablet base component.                                                             | In-progress | 2026F           | [Issue #142](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/142)                               | -------------------------------------------- |
 | REQ-NF-58  | Intern Shift Request should have an UI for desktop.                                                            | Backlog | 2026F           | [Issue #138](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/138)                              | -------------------------------------------- |
 | REQ-NF-58  | Intern Shift Request should have an UI for tablet.                                                            | Backlog | 2026F           | [Issue #137](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/137)                             | -------------------------------------------- |
-| REQ-NF-59  | Intern Shift Request should have an UI for mobile.                                                            | Backlog | 2026F           | [Issue #136](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/136)                           | -------------------------------------------- |
-                       |
+| REQ-NF-59  | Intern Shift Request should have an UI for mobile.                                                            | Backlog | 2026F           | [Issue #136](https://github.com/UTDallasEPICS/Center-for-Children-and-Families-Attendance-Tracker/issues/136)                           | -------------------------------------------- |                       |
 
 
 
