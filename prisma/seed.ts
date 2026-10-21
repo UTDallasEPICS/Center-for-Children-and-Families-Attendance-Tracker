@@ -1,5 +1,5 @@
 // seed.ts
-// Run this with: npx prisma@7 db seed
+// Run this with: npx prisma db seed
 // It sets up some baseline data so we're not starting from a completely empty
 // database every time we reset migrations during development.
 
