@@ -1,0 +1,8 @@
+model Site_Manager {
+  id String @id @default(uuid())
+
+  intern_ID String @unique
+  intern    Intern @relation("site_manager_profile", fields: [intern_ID], references: [id])
+
+  locations Location[]
+}

@@ -1,0 +1,14 @@
+model Shift_Request {
+  id String @id @default(uuid())
+
+  reason    String?
+  createdAt DateTime @default(now())
+
+  created_by_ID String
+  created_by    Intern @relation("created_shift_requests", fields: [created_by_ID], references: [id])
+
+  picked_up_by_ID String?
+  picked_up_by    Intern? @relation("picked_up_shift_requests", fields: [picked_up_by_ID], references: [id])
+
+  attendances Attendance[]
+}
