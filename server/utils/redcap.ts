@@ -14,7 +14,7 @@ export async function postToRedcap(body: Record<string, any>) {
         form.set(key, String(value))
     }
 
-    const res = await fetch(config.redcapApiUrl, {
+    const res = await fetch(config.public.redcapApiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: form.toString(),
