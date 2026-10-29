@@ -3,13 +3,14 @@ export async function getSemesterParticipants(semester: number) {
     // Implementation for fetching semester participants
     const fields = ["record_id", "sem", "chname_reg", "chlname_reg", "chdob_reg", "mphone_reg", "memail_reg", "childatt_checkin"];
 
-    //since semester only exists in the first week
+    
     const redcapData = await postToRedcap({
         content: "record",
         action: "export",
         format: "json",
         type: "flat",
         fields: fields.join(","),
+        //semester filter logic, semesters are only attached to the first week
         filterLogic: `[sem] = ${semester}`,
         rawOrLabel: "raw",
         rawOrLabelHeaders: "raw",
