@@ -22,6 +22,7 @@ export async function getSemesterParticipants(semester: number) {
     return (redcapData as any[]).filter((row) => Number(row.sem) === semester).map((row) => {
         return {
             recordId: String(row.record_id),
+            sem: Number(row.sem),
             name: `${row.chname_reg} ${row.chlname_reg}`,
             dob: row.chdob_reg,
             phone: row.mphone_reg,
