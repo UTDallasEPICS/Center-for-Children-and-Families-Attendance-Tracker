@@ -62,6 +62,35 @@ const formattedDate = new Date().toLocaleDateString('en-US', {
   day: 'numeric'
 })
 
+const loading = ref(false)
+const post = ref(null)
+const error = ref(null)
+
+watch(() => route.params.id, personInfo, { immediate : true}) // watches parameters to fetch data for refreshes
+
+async function personInfo(id) // api fetching for intern info
+{
+  error.value = null
+  post.value = null
+  loading.value = true
+
+  try 
+  {
+    post.value = await $fetch(`/api/intern/index.post.ts`) // fetching intern info (email, phone, and name)
+    
+  } catch (err : any)
+  {
+    error.value = err.toString() 
+    
+  } finally 
+  {
+    loading.value = false // if successfully fetched, loading is false (no longer loading)
+  }
+
+}
+
+
+
 const checkedIn = ref(false)
 const actionType = ref<'checkin' | 'checkout'>('checkin')
 const showPopup = ref(false)
