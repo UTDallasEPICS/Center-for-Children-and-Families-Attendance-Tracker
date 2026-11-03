@@ -62,59 +62,29 @@ const formattedDate = new Date().toLocaleDateString('en-US', {
   day: 'numeric'
 })
 
-const loading = ref(false)
-const post = ref(null)
-const error = ref(null)
+const route = useRoute()
 
-watch(() => route.params.id, personInfo, { immediate : true}) // watches parameters to fetch data for refreshes
-
-async function personInfo(id) // api fetching for intern info
+const // fetching intern email, number, and name data
 {
-  error.value = null
-  post.value = null
-  loading.value = true
+  data : intern,
+  pending : internPending,
+  error : internError,
+} = useFetch(`/api/intern`, // useFetch because it's something that's done immediately when hosting a server
+             { 
+               method : 'POST', // the post file is what contains the data, so the method must be POST
+               body : computed(() => ({id : route.params.id })),
+             })
 
-  try 
-  {
-    post.value = await $fetch(`/api/intern/`
-                              {
-                                method: 'POST'
-                              }) // fetching intern info (email, phone, and name)
-    
-  } catch (err : any)
-  {
-    error.value = err.toString() 
-    
-  } finally 
-  {
-    loading.value = false // if successfully fetched, loading is false (no longer loading)
-  }
-
-}
-
-watch(() => route.params.id, scheduleInfo, { immediate : true}) 
-  
-async function scheduleInfo(id) // api fetching for clockin/clockout times
+const  // fetching intern clock in and clock out times
 {
-  error.value = null
-  post.value = null
-  loading.value = true
-
-  try 
-  {
-    post.value = await $fetch(`/api/intern/schedule`) // fetching clock in and clock out time
-    
-  } catch ( err : any)
-  {
-
-    error.value = err.toString()
-  } finally 
-  {
-    loading value = false // if successfully fetched, loading is false (no longer loading)
-  }
-  
-}
-
+  data : timeEntries,
+  pending : timePending,
+  error : timeError,
+} = useFetch(`/api/intern/schedule/001`, // no implementation for authorization, so a placeholder value for user_id is here
+             {
+               method : 'GET', // the method is GET because it is get
+               query : computed(() => ({ id : route.params.id })),
+             })
 
 
 const checkedIn = ref(false)
