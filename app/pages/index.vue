@@ -76,7 +76,10 @@ async function personInfo(id) // api fetching for intern info
 
   try 
   {
-    post.value = await $fetch(`/api/intern/index.post.ts`) // fetching intern info (email, phone, and name)
+    post.value = await $fetch(`/api/intern/`
+                              {
+                                method: 'POST'
+                              }) // fetching intern info (email, phone, and name)
     
   } catch (err : any)
   {
@@ -87,6 +90,29 @@ async function personInfo(id) // api fetching for intern info
     loading.value = false // if successfully fetched, loading is false (no longer loading)
   }
 
+}
+
+watch(() => route.params.id, scheduleInfo, { immediate : true}) 
+  
+async function scheduleInfo(id) // api fetching for clockin/clockout times
+{
+  error.value = null
+  post.value = null
+  loading.value = true
+
+  try 
+  {
+    post.value = await $fetch(`/api/intern/schedule`) // fetching clock in and clock out time
+    
+  } catch ( err : any)
+  {
+
+    error.value = err.toString()
+  } finally 
+  {
+    loading value = false // if successfully fetched, loading is false (no longer loading)
+  }
+  
 }
 
 
