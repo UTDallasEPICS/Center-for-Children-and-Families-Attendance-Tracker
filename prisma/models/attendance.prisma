@@ -1,0 +1,16 @@
+model Attendance {
+  id String @id @default(uuid())
+
+  clock_in_time  DateTime?
+  clock_out_time DateTime?
+  status         Attendance_status? @default(ABSENT)
+
+  internID String
+  intern   Intern @relation(fields: [internID], references: [id])
+
+  shift_ID      String
+  scheduled_day Scheduled_day @relation(fields: [shift_ID], references: [id])
+
+  shift_request_ID String?
+  shift_request    Shift_Request? @relation(fields: [shift_request_ID], references: [id])
+}
