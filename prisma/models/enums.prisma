@@ -1,0 +1,6 @@
+enum Attendance_status {
+  ABSENT
+  PRESENT
+  CALLED_OFF
+  COVERING_SHIFT
+}
