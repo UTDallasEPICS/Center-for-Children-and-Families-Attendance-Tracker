@@ -113,6 +113,8 @@ function handleClick() // function for updating the checked in option
     checkedIn.value = true // is checked in
     actionType = 'checkin' // displays checked in
   }
+
+  showPopup.value = true
 }
 
 const handleClick = () => {
