@@ -90,6 +90,30 @@ const  // fetching intern clock in and clock out times
 const checkedIn = ref(false)
 const actionType = ref<'checkin' | 'checkout'>('checkin')
 const showPopup = ref(false)
+const checkError = ref<string>(null)
+
+function handleClick() // function for updating the checked in option
+{
+  checkedIn.value = false // starts off as not checked in
+  actionType = 'checkout' // displays checked out
+
+  try 
+  {
+    $fetch(`/api/intern/002`, // fetches update api to update status
+          {
+            method: 'PUT' // PUT because it's updating the entire clocked in
+          }) 
+  } catch(err : any) 
+  {
+
+    checkError.value = 'Could not check in.' // throws an error
+  } finally 
+  {
+
+    checkedIn.value = true // is checked in
+    actionType = 'checkin' // displays checked in
+  }
+}
 
 const handleClick = () => {
   console.log('clicked')
