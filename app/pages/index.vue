@@ -95,7 +95,7 @@ const checkError = ref<string>(null)
 function handleClick() // function for updating the checked in option
 {
   checkedIn.value = false // starts off as not checked in
-  actionType = 'checkout' // displays checked out
+  actionType = 'checkin' // needs to check in at base
 
   try 
   {
@@ -111,7 +111,7 @@ function handleClick() // function for updating the checked in option
   {
 
     checkedIn.value = true // is checked in
-    actionType = 'checkin' // displays checked in
+    actionType = 'checkout' // once checked in, the only option is to check out
   }
 
   showPopup.value = true
