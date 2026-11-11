@@ -44,6 +44,14 @@
       Session: 02/03/2026 - 05/15/2026
     </div>
 
+    // Digit boxes for PIN
+    <div
+      :style="
+      {
+        width: `$40px`,
+        height: `48px`
+      }"
+
 
     <section class="flex items-center justify-center min-h-screen">
 
