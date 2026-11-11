@@ -46,11 +46,14 @@
 
     // Digit boxes for PIN
     <div
+      v-for="(digit, index) in 4"
+      :key="index"
       :style="
       {
         width: `$40px`,
         height: `48px`
       }"
+    ></div>
 
 
     <section class="flex items-center justify-center min-h-screen">
