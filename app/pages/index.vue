@@ -45,18 +45,25 @@
     </div>
 
     // Digit boxes for PIN
-    <div
+    <div class="flex justify-center gap-3 w-10 h-12 bg-[#FFFFFF] border border-[#E5E5E5] rounded-[4px] flex items-center justify-center text-[20px] font-[400] text-[#171717]"
       v-for="(digit, index) in 4"
       :key="index"
-      :style="
-      {
-        width: `$40px`,
-        height: `48px`
-      }"
     ></div>
 
+    // Text instruction for popup
+    <div class="flex flex-col items-center">
+      <h1 class="pt-15 pl-5 flex items-center text-[171717] text-xl gap-2">
+      Enter 4-digit PIN to check in
+      </h1>
+    </div>
 
-    <section class="flex items-center justify-center min-h-screen">
+    // Check in button
+    <button 
+      type="button"
+      class="w-[271px] h-[48px] bg-[#E87500] rounded-[8px] text-white text-[14px] text-[#FFFFFF]"
+    > 
+      Check In
+  </button>
 
       <!-- CALENDAR SECTION -->
       <CalendarSection />
@@ -66,6 +73,8 @@
 
 </template>
 
+
+// remember to fix format + apis (intern->time)
 <script setup lang="ts">
 const formattedDate = new Date().toLocaleDateString('en-US', {
   weekday: 'long',
@@ -96,8 +105,7 @@ const  // fetching intern clock in and clock out times
                method : 'GET', // the method is GET because it is get
                query : computed(() => ({ id : route.params.id })),
              })
-
-
+             
 const checkedIn = ref(false)
 const actionType = ref<'checkin' | 'checkout'>('checkin')
 const showPopup = ref(false)
@@ -127,6 +135,8 @@ function handleClick() // function for updating the checked in option
 
   showPopup.value = true
 }
+
+
 
 const handleClick = () => {
   console.log('clicked')
