@@ -20,6 +20,7 @@
         "@nuxt/ui": "^4.7.0",
         "@tailwindcss/postcss": "^4.1.17",
         "@tailwindcss/vite": "^4.1.13",
+        "better-sqlite3": "^13.0.3",
         "lucide-vue-next": "^1.0.0",
         "nuxt": "^4.1.0",
         "tailwindcss": "^4.1.13",
@@ -27,15 +28,15 @@
         "vue-router": "^4.5.1"
     },
     "devDependencies": {
-        "@types/better-sqlite3": "^7.6.13",
-        "@types/node": "^24.10.1",
         "@prisma/adapter-better-sqlite3": "^7.1.0",
         "@prisma/client": "^7.1.0",
-        "prettier": "^3.6.2",
+        "@types/better-sqlite3": "^7.6.13",
+        "@types/node": "^24.10.1",
         "dotenv": "^17.2.3",
+        "prettier": "^3.6.2",
         "prisma": "^7.1.0",
+        "tsx": "^4.21.0",
         "typescript": "^5.9.3",
-        "vue-tsc": "^3.2.5",
-        "tsx": "^4.21.0"
+        "vue-tsc": "^3.2.5"
     }
 }
