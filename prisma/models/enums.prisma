@@ -3,4 +3,6 @@ enum Attendance_status {
   PRESENT
   CALLED_OFF
   COVERING_SHIFT
+  FUTURE_SHIFT
+  LATE
 }

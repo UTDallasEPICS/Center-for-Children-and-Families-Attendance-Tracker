@@ -7,9 +7,11 @@
   /* Brand */
   --color-brand-orange: #E87500;
   --color-brand-green: #154734;
+  --color-brand-dark-Orange: #c95100;
 
   /* Text */
   --color-text-main: #171717;
+    
   --color-text-sub-dark: #525252;
   --color-text-sub-light: #737373;
   --color-text-disabled: #A1A1A1;
