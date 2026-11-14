@@ -1,8 +1,7 @@
-export default defineEventHandler(async (event) => { //Got rid of defineEventHandler import
-    // Removed parameter checking
-    const userID = event.context.params?.user_id as string
+export default defineEventHandler(async (event) => {
+    const internID = event.context.params?.user_id as string
 
-    if (!userID) {
+    if (!internID) {
         throw createError({
             statusCode: 400,
             statusMessage: "User ID is required"
@@ -12,20 +11,30 @@ export default defineEventHandler(async (event) => { //Got rid of defineEventHan
     const now = Date.now()
 
     const attendanceRecords = await prisma.attendance.findMany({
-        where: { userID },
-        orderBy: { clock_in_time: "asc" }
+        where: { internID },
+        include: {
+            scheduled_day: true
+        },
+        orderBy: {
+            scheduled_day: {
+                start_time: "asc"
+            }
+        }
     })
 
     const previous_shifts = []
     const future_shifts = []
 
     attendanceRecords.forEach((record) => {
-        const shiftTime = record.clock_in_time
-            ? new Date(record.clock_in_time).getTime()
-            : null
+        // Use the scheduled shift date, NOT the clock-in time
+        const shiftTime = new Date(
+            record.scheduled_day.start_time
+        ).getTime()
 
         const shift = {
-            datetime: new Date(shiftTime).toISOString(),
+            datetime: record.scheduled_day.start_time.toISOString(),
+            start_time: record.scheduled_day.start_time,
+            end_time: record.scheduled_day.end_time,
             attendance_status: record.status?.toLowerCase() ?? null,
             clock_in_time: record.clock_in_time,
             clock_out_time: record.clock_out_time

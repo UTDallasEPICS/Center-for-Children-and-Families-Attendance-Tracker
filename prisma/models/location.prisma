@@ -1,0 +1,12 @@
+model Location {
+  id String @id @default(uuid())
+
+  location_name String
+  address       String
+
+  attendance_code String?
+  code_expires_at DateTime?
+
+  managers       Site_Manager[]
+  scheduled_days Scheduled_day[]
+}

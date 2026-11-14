@@ -1,0 +1,13 @@
+model Scheduled_day {
+  id String @id @default(uuid())
+
+  start_time DateTime
+  end_time   DateTime
+
+  site_ID  String
+  location Location @relation(fields: [site_ID], references: [id])
+
+  attendance Attendance[]
+
+  next_shift_for Intern[] @relation("next_shift")
+}

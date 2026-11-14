@@ -26,13 +26,17 @@ const placeholder = shallowRef(todayDate)
 //so using this as a temp user info for now
 const userID = 'intern-seed-001'
 
-const { data: attendanceData, error, status } = await useFetch<AttendanceResponse>(
+const { data: attendanceData} = await useFetch<AttendanceResponse>(
   () => `/api/intern/schedule/${userID}`
 )
 
 const allShifts = computed(() => {
-  const history = attendanceData.value.attendance_history
-  return [...history.previous_shifts, ...history.future_shifts]
+  const history = attendanceData.value?.attendance_history
+
+  return [
+    ...(history?.previous_shifts || []),
+    ...(history?.future_shifts || [])
+  ]
 })
 
 const shiftCount = computed(() => {
@@ -42,7 +46,9 @@ const shiftCount = computed(() => {
     present: shifts.filter(s => s.attendance_status === 'present').length,
     absent: shifts.filter(s => s.attendance_status === 'absent').length,
     late: shifts.filter(s => s.attendance_status === 'late').length,
-    pending: shifts.filter(s => s.attendance_status === null).length,
+    covered: shifts.filter(s => s.attendance_status === 'covering_shift').length,
+    callOut: shifts.filter(s => s.attendance_status === 'called_off').length,
+    future: shifts.filter(s => s.attendance_status === 'future_shift').length,
     total: shifts.length
   }
 })
@@ -85,7 +91,7 @@ const selectedDayWorkTime = computed(() => {
         clockIn: formatTime(shift.clock_in_time),
         clockOut: shift.clock_out_time ? formatTime(shift.clock_out_time) : null,
         duration,
-        status: shift.attendance_status
+        attendance_status: shift.attendance_status
       }
     })
 })
@@ -109,6 +115,12 @@ function getColorByDate(date: Date) {
       return 'error'
     case 'late':
       return 'warning'
+    case 'Future_shift':
+      return 'color' //no color rn probably will be grey
+    case 'called_off':
+      return 'secondary'
+    case 'covering_shift':
+      return 'secondary'
     default:
       return undefined
   }
@@ -222,24 +234,35 @@ function getColorByDate(date: Date) {
         <div
           v-for="(shift, index) in selectedDayWorkTime"
           :key="index"
-          class="flex flex-wrap items-center justify-between  py-1"
+          class="flex flex-wrap items-center justify-between py-1"
         >
           <div>
-            <p class="flex items-center text-sm xl:text-[22px] ">
+            <p class="flex items-center text-sm xl:text-[22px]">
               <Dot :size="24" />
-              <span>{{ shift.clockIn }} – {{ shift.clockOut ?? 'In progress' }}</span>
+              <template v-if="shift.attendance_status === 'absent'">
+                Absent
+              </template>
+              <template v-else-if="shift.attendance_status === 'called_off'">
+                Called Off
+              </template>
+              <template v-else-if="shift.attendance_status === 'null'">
+                No Shift
+              </template>
+              
+              <template v-else>
+                {{ shift.clockIn }} – {{   shift.clockOut ?? 'In progress' }}
+              </template>
             </p>
           </div>
 
           <span class="text-sm xl:text-[22px] pr-[10px]">
-            {{ shift.duration }}
+            <template v-if="shift.attendance_status === 'present'">
+              {{ shift.duration }}
+            </template>
           </span>
         </div>
       </template>
 
-      <p v-else class="text-sm text-gray-500 p-2">
-        No shift
-      </p>
     </div>
 
   </div>
