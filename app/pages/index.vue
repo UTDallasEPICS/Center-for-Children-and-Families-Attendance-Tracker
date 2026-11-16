@@ -44,20 +44,17 @@
       Session: 02/03/2026 - 05/15/2026
     </div>
 
-    // Digit boxes for PIN
     <div class="flex justify-center gap-3 w-10 h-12 bg-[#FFFFFF] border border-[#E5E5E5] rounded-[4px] flex items-center justify-center text-[20px] font-[400] text-[#171717]"
       v-for="(digit, index) in 4"
       :key="index"
     ></div>
 
-    // Text instruction for popup
     <div class="flex flex-col items-center">
       <h1 class="pt-15 pl-5 flex items-center text-[171717] text-xl gap-2">
       Enter 4-digit PIN to check in
       </h1>
     </div>
 
-    // Check in button
     <button 
       type="button"
       class="w-[271px] h-[48px] bg-[#E87500] rounded-[8px] text-white text-[14px] text-[#FFFFFF]"
@@ -66,21 +63,20 @@
   </button>
 
       <!-- CALENDAR SECTION -->
-      <CalendarSection />
-      
-    </section>
+      <CalendarSection class="mt-8"/>
   </div>
 
 </template>
 
 
-// remember to fix format + apis (intern->time)
 <script setup lang="ts">
 const formattedDate = new Date().toLocaleDateString('en-US', {
   weekday: 'long',
   month: 'long',
   day: 'numeric'
 })
+
+const route = useRoute()
 
 // fetching intern email, number, and name data
 const { data : intern, pending : internPending, error : internError, } = useFetch(`/api/intern`, { 
@@ -92,7 +88,7 @@ const { data : intern, pending : internPending, error : internError, } = useFetc
 const internID = "001" 
 
 // fetching intern clock in and clock out times
-// no implementation for authorization, so a placeholder value for user_id is her
+// no implementation for authorization, so a placeholder value for user_id is here
 const  { data : timeEntries, pending : timePending, error : timeError, } = useFetch(`/api/intern/time/${internID}`, {
                method : 'GET', 
                query : computed(() => ({ id : route.params.id })),
@@ -101,42 +97,33 @@ const  { data : timeEntries, pending : timePending, error : timeError, } = useFe
 const checkedIn = ref(false)
 const actionType = ref<'checkin' | 'checkout'>('checkin')
 const showPopup = ref(false)
-const checkError = ref<string>(null)
+const checkError = ref<string | null>(null)
+const submitting = ref(false)
 
 
 
-// function for updating the checked in option
-function handleClick() 
+
+async function handleClick() 
 {
+  const action = checkedIn.value ? 'checkout' : 'checkin'
   checkedIn.value = false 
-  actionType = 'checkin' 
+  actionType.value = 'checkin' 
+  checkError.value = null
+  submitting.value = true
 
   try {
-    $fetch(`/api/intern/time/${internID}`, {
-            method: 'POST' 
+    await $fetch(`/api/intern/time/${internID}`, {
+            method: 'POST',
+            body: { action }, 
           }) 
-  } catch(err : any) {
-    checkError.value = 'Could not check in.' 
+  
+  checkedIn.value = action === 'checkin'
+  await refreshTimes()
+
+  } catch {
+    checkError.value = action === 'checkin' ? 'Check-in failed. Please try again.' : 'Check-out failed. Please try again.'
   } finally {
-    checkedIn.value = true // is checked in
-    actionType = 'checkout' // once checked in, the only option is to check out
-  }
-
-  showPopup.value = true
-}
-
-
-
-const handleClick = () => {
-  console.log('clicked')
-  console.log('checkedIn:', checkedIn.value)
-
-  if (checkedIn.value) {
-    console.log('Entering checkout branch')
-    checkedIn.value = false
-  } else {
-    console.log('Entering checkin branch')
-    checkedIn.value = true
+    submitting.value = false
   }
 
   showPopup.value = true
