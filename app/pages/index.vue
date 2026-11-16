@@ -82,27 +82,19 @@ const formattedDate = new Date().toLocaleDateString('en-US', {
   day: 'numeric'
 })
 
-const route = useRoute()
-
-const // fetching intern email, number, and name data
-{
-  data : intern,
-  pending : internPending,
-  error : internError,
-} = useFetch(`/api/intern`, // useFetch because it's something that's done immediately when hosting a server
-             { 
-               method : 'POST', // the post file is what contains the data, so the method must be POST
-               body : computed(() => ({id : route.params.id })),
+// fetching intern email, number, and name data
+const { data : intern, pending : internPending, error : internError, } = useFetch(`/api/intern`, { 
+               method : 'POST',
+               body : computed(() => ({id : route.params.id })), // need to implement body still
              })
 
-const  // fetching intern clock in and clock out times
-{
-  data : timeEntries,
-  pending : timePending,
-  error : timeError,
-} = useFetch(`/api/intern/schedule/001`, // no implementation for authorization, so a placeholder value for user_id is here
-             {
-               method : 'GET', // the method is GET because it is get
+// placeholder for intern ID, because betterauth isn't implemented yet
+const internID = "001" 
+
+// fetching intern clock in and clock out times
+// no implementation for authorization, so a placeholder value for user_id is her
+const  { data : timeEntries, pending : timePending, error : timeError, } = useFetch(`/api/intern/time/${internID}`, {
+               method : 'GET', 
                query : computed(() => ({ id : route.params.id })),
              })
              
@@ -111,24 +103,21 @@ const actionType = ref<'checkin' | 'checkout'>('checkin')
 const showPopup = ref(false)
 const checkError = ref<string>(null)
 
-function handleClick() // function for updating the checked in option
+
+
+// function for updating the checked in option
+function handleClick() 
 {
-  checkedIn.value = false // starts off as not checked in
-  actionType = 'checkin' // needs to check in at base
+  checkedIn.value = false 
+  actionType = 'checkin' 
 
-  try 
-  {
-    $fetch(`/api/intern/002`, // fetches update api to update status
-          {
-            method: 'PUT' // PUT because it's updating the entire clocked in
+  try {
+    $fetch(`/api/intern/time/${internID}`, {
+            method: 'POST' 
           }) 
-  } catch(err : any) 
-  {
-
-    checkError.value = 'Could not check in.' // throws an error
-  } finally 
-  {
-
+  } catch(err : any) {
+    checkError.value = 'Could not check in.' 
+  } finally {
     checkedIn.value = true // is checked in
     actionType = 'checkout' // once checked in, the only option is to check out
   }
