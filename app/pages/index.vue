@@ -36,6 +36,16 @@
   :type="actionType"
   @close="showPopup = false"
 />
+    <div class="max-h-[90vh] w-full max-w-[320px] overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:max-w-sm sm:rounded-3xl sm:p-6 md:max-w-md md:p-8">
+
+      <p class="text-center pt-15 pl-5 text-[171717] text-xl">
+        Enter 4-digit PIN to check in {{  actionType === 'checkin' ? 'or check out' : '' }}
+      </p>
+
+      <div class="relative mt-4 flex justify-center gap-2 sm:mt-5 sm:gap-3 md:mt-6 md:gap-4"
+        
+    </div>
+
 
     <div class="pt-15 pl-5 flex items-center text-nuetral-900 text-3xl gap-2">
       Attendence Progress
@@ -48,12 +58,6 @@
       v-for="(digit, index) in 4"
       :key="index"
     ></div>
-
-    <div class="flex flex-col items-center">
-      <h1 class="pt-15 pl-5 flex items-center text-[171717] text-xl gap-2">
-      Enter 4-digit PIN to check in
-      </h1>
-    </div>
 
     <button 
       type="button"
@@ -100,7 +104,25 @@ const showPopup = ref(false)
 const checkError = ref<string | null>(null)
 const submitting = ref(false)
 
+const pins = ref<string[]>(['', '', '', ''])
+const pinRefs = ref<HTMLInputElement[]>([])
+const pinComplete = computed(() => pins.value.every((d) => d !== ''))
 
+
+function openPopup() {
+  actionType.value = checkedIn.value ? 'checkout' : 'checkin'
+  checkError.value = null
+  pins.value = [ '', '', '', '']
+  showPopup.value = true
+  nextTick(() => focusBox(0))
+}
+
+function closePopup() {
+  showPopup.value = false
+  checkError.value = null
+  pins.value = [ '', '', '', '']
+  checkError.value = null
+}
 
 
 async function handleClick() 
@@ -128,5 +150,7 @@ async function handleClick()
 
   showPopup.value = true
 }
+
+
 
 </script>
