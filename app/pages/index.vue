@@ -1,75 +1,87 @@
 <template>
-  <div class="  max-w-[800px] mx-auto px-4 py-5 pt-10 bg-neutral-50">
-    <h1 class="text-4xl mb-4 justify-self-start">Intern Home</h1>
+  <div class="mx-auto min-h-screen max-w-[800px] bg-neutral-50 px-4 pb-10 pt-6">
+    <h1 class="mb-3 text-2xl font-medium text-neutral-900">Intern Home</h1>
 
-    <div class=" pl-5 flex items center gap-8">  
+    <!-- Avatar + speech bubble -->
+    <div class="flex items-center gap-2">
       <AvatarComponent
         avatar-url="https://i.pravatar.cc/150?img=69"
         initials="JD"
         status="green"
         :checked-in="checkedIn"
       />
-      <div class="pt-2 flex flex-col gap-2 "> 
-        <div class="relative flex justify-center  w-[200px] h-[60px] rounded-xl bg-white text-neutral-900 text-xl items-center"> 
-          <div class=" absolute bottom-0 -left-[7px] bg-white w-4 h-4 rounded-full"> </div>  
-          {{ checkedIn ? 'not checked in' : 'checked in' }}        
-        </div>
+      <div
+        class="relative flex h-10 items-center rounded-2xl bg-white px-4 text-xs text-neutral-900 shadow-sm"
+      >
+        <div class="absolute -left-[5px] bottom-0 h-3 w-3 rounded-full bg-white"></div>
+        {{ checkedIn ? 'Checked in' : 'Not checked in' }}
       </div>
     </div>
-    
-    <div class="pt-2 pl-5 flex items-center gap-2">
-      <span class="text-[#525252] text-xl">Today</span>
-      <div class="w-1 h-1 bg-neutral-300 rounded-full"></div>
-      <span class="text-[#525252] text-xl">{{ formattedDate }}</span>
+
+    <!-- Date -->
+    <div class="mt-4 flex items-center gap-1.5 text-sm text-neutral-600">
+      <span class="font-medium text-neutral-900">Today</span>
+      <span class="h-1 w-1 rounded-full bg-neutral-400"></span>
+      <span>{{ formattedDate }}</span>
     </div>
-    <div class="pl-5 text-5xl">
+
+    <!-- Shift time -->
+    <div class="mt-1 text-[26px] font-medium text-neutral-900 sm:text-4xl">
       11:00 AM - 12:30 PM
-    </div>  
-
-    <button 
-  @click="handleClick"
-  class="bg-[#E87500] ml-5 mr-6 text-white rounded-lg w-[590px] h-24 text-center flex items-center justify-center text-2xl mt-4 hover:bg-orange-300 transition-colors duration-300"
->
-  {{ checkedIn ? 'not checked in' : 'checked in' }}
-</button>
-<PopupModals v-if="showPopup" 
-  :type="actionType"
-  @close="showPopup = false"
-/>
-    <div class="max-h-[90vh] w-full max-w-[320px] overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:max-w-sm sm:rounded-3xl sm:p-6 md:max-w-md md:p-8">
-
-      <p class="text-center pt-15 pl-5 text-[171717] text-xl">
-        Enter 4-digit PIN to check in {{  actionType === 'checkin' ? 'or check out' : '' }}
-      </p>
-
-      <div class="relative mt-4 flex justify-center gap-2 sm:mt-5 sm:gap-3 md:mt-6 md:gap-4"
-        
     </div>
 
+    <!-- Main button: opens the popup, no request yet -->
+    <button
+      class="mt-4 flex h-12 w-full items-center justify-center rounded-lg bg-[#E87500] text-sm font-medium text-white transition-colors duration-300 hover:bg-orange-600 sm:h-14 sm:text-base"
+      @click="openPopup"
+    >
+      {{ checkedIn ? 'Check Out' : 'Check In' }}
+    </button>
 
-    <div class="pt-15 pl-5 flex items-center text-nuetral-900 text-3xl gap-2">
-      Attendence Progress
-    </div>
-    <div class="pl-5 ">
-      Session: 02/03/2026 - 05/15/2026
-    </div>
+    <!-- PopupModals is the shell; the card design lives here -->
+    <PopupModals v-if="showPopup" @close="closePopup">
+      <div
+        class="max-h-[90vh] w-full max-w-[320px] overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:max-w-sm sm:rounded-3xl sm:p-6 md:max-w-md md:p-8"
+      >
+        <p class="text-center text-sm text-neutral-900 sm:text-base md:text-lg">
+          Enter 4-digit PIN to {{ actionType === 'checkin' ? 'check in' : 'check out' }}
+        </p>
 
-    <div class="flex justify-center gap-3 w-10 h-12 bg-[#FFFFFF] border border-[#E5E5E5] rounded-[4px] flex items-center justify-center text-[20px] font-[400] text-[#171717]"
-      v-for="(digit, index) in 4"
-      :key="index"
-    ></div>
+        <div class="mt-4 flex justify-center gap-2 sm:mt-5 sm:gap-3 md:mt-6 md:gap-4">
+          <input
+            v-for="(pin, index) in pins"
+            :key="index"
+            type="text"
+            maxlength="1"
+            class="h-12 w-12 rounded-lg border border-neutral-300 text-center text-lg font-medium text-neutral-900 focus:border-[#E87500] focus:ring focus:ring-[#E87500]/30 sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl"
+            v-model="pins[index]"
+            @input="() => { if (pins[index] && index < pins.length - 1) focusBox(index + 1) }"
+            @keydown.backspace="() => { if (!pins[index] && index > 0) focusBox(index - 1) }"
+            ref="el => pinRefs[index] = el"
+          />
+        </div>
 
-    <button 
-      type="button"
-      class="w-[271px] h-[48px] bg-[#E87500] rounded-[8px] text-white text-[14px] text-[#FFFFFF]"
-    > 
-      Check In
-  </button>
+        <p v-if="checkError" class="mt-3 text-center text-xs text-red-600 sm:text-sm">
+          {{ checkError }}
+        </p>
 
-      <!-- CALENDAR SECTION -->
-      <CalendarSection class="mt-8"/>
+        <button
+          type="button"
+          :disabled="submitting || !pinComplete"
+          class="mt-5 h-12 w-full rounded-lg bg-[#E87500] text-sm font-medium text-white disabled:opacity-50 sm:mt-6 md:h-14 md:text-base"
+          @click="handleClick"
+        >
+          {{ submitting ? 'Submitting...' : actionType === 'checkin' ? 'Check In' : 'Check Out' }}
+        </button>
+      </div>
+    </PopupModals>
+
+    <!-- Attendance -->
+    <h2 class="mt-10 text-xl font-medium text-neutral-900">Attendance Progress</h2>
+    <p class="text-xs text-neutral-500">Session: 02/03/2026 - 05/15/2026</p>
+
+    <CalendarSection class="mt-3" />
   </div>
-
 </template>
 
 
@@ -107,6 +119,10 @@ const submitting = ref(false)
 const pins = ref<string[]>(['', '', '', ''])
 const pinRefs = ref<HTMLInputElement[]>([])
 const pinComplete = computed(() => pins.value.every((d) => d !== ''))
+
+function focusBox(index : number) {
+  pinRefs.value[index]?.focus() 
+}
 
 
 function openPopup() {
