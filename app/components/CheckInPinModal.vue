@@ -1,147 +1,115 @@
 <template>
-  <div v-if="show" class="fixed top-0 left-0 w-full h-full bg-black/45 flex justify-center items-center z-[999]" @click.self="$emit('cancel')">
-    <div class="bg-white p-[22px] rounded-2xl w-[80%] max-w-[340px] text-center">
-      <p class="text-base font-semibold mb-4">Enter your 4-digit PIN to check in</p>
+  <div class="px-2 pb-2 pt-6 text-center">
+    <p class="mb-10 text-2xl font-medium text-[#1a1a1a]">
+      Enter 4-digit PIN to check {{ checkedIn ? "out" : "in" }}
+    </p>
 
-      <div class="flex justify-center gap-2 mb-4">
-        <input
-          v-for="(digit, index) in pinDigits"
-          :key="index"
-          :ref="(el) => (inputRefs[index] = el as HTMLInputElement)"
-          v-model="pinDigits[index]"
-          @input="handleInput(index, $event)"
-          @keydown="handleKeydown(index, $event)"
-          @paste="handlePaste"
-          type="text"
-          inputmode="numeric"
-          maxlength="1"
-          class="w-12 h-12 text-center text-lg font-semibold border-2 rounded-lg focus:outline-none focus:border-[#2d8a4b]"
-          :class="pinDigits[index] ? 'border-[#2d8a4b]' : 'border-gray-300'"
-        />
-      </div>
-
-      <p v-if="errorMessage" class="text-sm text-red-500 mb-3">
-        {{ errorMessage }}
-      </p>
-
-      <div class="flex justify-around mt-[18px]">
-        <button
-          @click="handleConfirm"
-          :disabled="!isPinComplete"
-          class="px-5 py-2.5 rounded-[25px] border-none text-[15px] bg-[#2d8a4b] text-white disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Confirm
-        </button>
-        <button @click="handleCancel" class="px-5 py-2.5 rounded-[25px] border-none text-[15px] bg-[#d9534f] text-white">Cancel</button>
-      </div>
+    <div class="mb-10 flex justify-center gap-3">
+      <input
+        v-for="(digit, index) in pinDigits"
+        :key="index"
+        :ref="(el) => (inputRefs[index] = el as HTMLInputElement)"
+        v-model="pinDigits[index]"
+        type="text"
+        inputmode="numeric"
+        maxlength="1"
+        class="h-[72px] w-14 rounded-xl border-2 bg-white text-center text-3xl font-medium text-[#1a1a1a] transition-all duration-200 focus:outline-none focus:border-[#E87500]"
+        :class="
+          pinDigits[index]
+            ? 'border-[#E87500] shadow-[0_4px_14px_rgba(232,117,0,0.25)]'
+            : 'border-[#E5E5E5]'
+        "
+        @input="handleInput(index, $event)"
+        @keydown="handleKeydown(index, $event)"
+        @paste="handlePaste"
+      />
     </div>
+
+    <p v-if="errorMessage" class="mb-4 -mt-6 text-sm text-red-500">
+      {{ errorMessage }}
+    </p>
+
+    <button
+      type="button"
+      :disabled="!isPinComplete"
+      class="flex h-14 w-full items-center justify-center rounded-xl bg-[#E87500] text-lg font-medium text-white transition-colors duration-300 hover:bg-[#d06a00] disabled:cursor-not-allowed disabled:opacity-50"
+      @click="handleConfirm"
+    >
+      {{ checkedIn ? "Check Out" : "Check In" }}
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch, nextTick } from "vue"
+import { ref, computed, nextTick, onMounted } from "vue"
 
-  const props = defineProps<{
-    show: boolean
-  }>()
+defineProps<{
+  checkedIn?: boolean
+}>()
 
-  const emit = defineEmits<{
-    confirm: [pin: string]
-    cancel: []
-  }>()
+const emit = defineEmits<{
+  confirm: [pin: string]
+  cancel: []
+}>()
 
-  const pinDigits = ref<string[]>(["", "", "", ""])
-  const inputRefs = ref<(HTMLInputElement | null)[]>([])
-  const errorMessage = ref("")
+const pinDigits = ref<string[]>(["", "", "", ""])
+const inputRefs = ref<(HTMLInputElement | null)[]>([])
+const errorMessage = ref("")
 
-  const isPinComplete = computed(() => {
-    return pinDigits.value.every((digit) => digit !== "")
-  })
+const isPinComplete = computed(() => pinDigits.value.every((digit) => digit !== ""))
 
-  function handleInput(index: number, event: Event) {
-    const target = event.target as HTMLInputElement
-    const value = target.value.replace(/\D/g, "") // Only allow digits
+function handleInput(index: number, event: Event) {
+  const target = event.target as HTMLInputElement
+  const value = target.value.replace(/\D/g, "")
 
-    if (value) {
-      pinDigits.value[index] = value.slice(-1) // Only take the last character
-
-      // Move to next input if available
-      if (index < 3 && inputRefs.value[index + 1]) {
-        nextTick(() => {
-          inputRefs.value[index + 1]?.focus()
-        })
-      }
-    } else {
-      pinDigits.value[index] = ""
+  if (value) {
+    pinDigits.value[index] = value.slice(-1)
+    if (index < 3) {
+      nextTick(() => inputRefs.value[index + 1]?.focus())
     }
-
-    errorMessage.value = ""
+  } else {
+    pinDigits.value[index] = ""
   }
 
-  function handleKeydown(index: number, event: KeyboardEvent) {
-    // Handle backspace
-    if (event.key === "Backspace" && !pinDigits.value[index] && index > 0) {
-      nextTick(() => {
-        inputRefs.value[index - 1]?.focus()
-      })
-    }
+  errorMessage.value = ""
+}
 
-    // Prevent non-numeric input
-    if (!/[0-9]/.test(event.key) && !["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"].includes(event.key)) {
-      event.preventDefault()
-    }
+function handleKeydown(index: number, event: KeyboardEvent) {
+  if (event.key === "Backspace" && !pinDigits.value[index] && index > 0) {
+    nextTick(() => inputRefs.value[index - 1]?.focus())
   }
 
-  function handlePaste(event: ClipboardEvent) {
+  if (event.key === "Enter" && isPinComplete.value) {
+    handleConfirm()
+    return
+  }
+
+  if (
+    !/[0-9]/.test(event.key) &&
+    !["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter"].includes(event.key)
+  ) {
     event.preventDefault()
-    const pastedData = event.clipboardData?.getData("text") || ""
-    const digits = pastedData.replace(/\D/g, "").slice(0, 4).split("")
-
-    digits.forEach((digit, index) => {
-      if (index < 4) {
-        pinDigits.value[index] = digit
-      }
-    })
-
-    // Focus the last filled input or the first empty one
-    const lastFilledIndex = digits.length - 1
-    const focusIndex = lastFilledIndex < 3 ? lastFilledIndex + 1 : 3
-    nextTick(() => {
-      inputRefs.value[focusIndex]?.focus()
-    })
   }
+}
 
-  function handleConfirm() {
-    if (isPinComplete.value) {
-      const pin = pinDigits.value.join("")
-      emit("confirm", pin)
-      resetModal()
-    }
-  }
+function handlePaste(event: ClipboardEvent) {
+  event.preventDefault()
+  const pasted = event.clipboardData?.getData("text") || ""
+  const digits = pasted.replace(/\D/g, "").slice(0, 4).split("")
 
-  function handleCancel() {
-    resetModal()
-    emit("cancel")
-  }
+  digits.forEach((digit, i) => (pinDigits.value[i] = digit))
 
-  function resetModal() {
-    pinDigits.value = ["", "", "", ""]
-    errorMessage.value = ""
-    nextTick(() => {
-      inputRefs.value[0]?.focus()
-    })
-  }
+  const focusIndex = Math.min(digits.length, 3)
+  nextTick(() => inputRefs.value[focusIndex]?.focus())
+}
 
-  // Watch for show prop changes to reset and focus
-  watch(
-    () => props.show,
-    (newValue) => {
-      if (newValue) {
-        resetModal()
-        nextTick(() => {
-          inputRefs.value[0]?.focus()
-        })
-      }
-    }
-  )
+function handleConfirm() {
+  if (!isPinComplete.value) return
+  emit("confirm", pinDigits.value.join(""))
+}
+
+// PopupModals mounts its slot fresh on each open, so this focuses the first box every time
+onMounted(() => {
+  nextTick(() => inputRefs.value[0]?.focus())
+})
 </script>
