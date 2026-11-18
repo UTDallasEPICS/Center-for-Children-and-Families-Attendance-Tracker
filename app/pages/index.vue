@@ -2,7 +2,6 @@
   <div class="mx-auto min-h-screen max-w-[800px] bg-neutral-50 px-4 pb-10 pt-6">
     <h1 class="mb-3 text-2xl font-medium text-neutral-900">Intern Home</h1>
 
-    <!-- Avatar + speech bubble -->
     <div class="flex items-center gap-2">
       <AvatarComponent
         avatar-url="https://i.pravatar.cc/150?img=69"
@@ -11,34 +10,29 @@
         :checked-in="checkedIn"
       />
       <div
-        class="relative flex h-10 items-center rounded-2xl bg-white px-4 text-xs text-neutral-900 shadow-sm"
-      >
+        class="relative flex h-10 items-center rounded-2xl bg-white px-4 text-xs text-neutral-900 shadow-sm">
         <div class="absolute -left-[5px] bottom-0 h-3 w-3 rounded-full bg-white"></div>
         {{ checkedIn ? 'Checked in' : 'Not checked in' }}
       </div>
     </div>
 
-    <!-- Date -->
     <div class="mt-4 flex items-center gap-1.5 text-sm text-neutral-600">
       <span class="font-medium text-neutral-900">Today</span>
       <span class="h-1 w-1 rounded-full bg-neutral-400"></span>
       <span>{{ formattedDate }}</span>
     </div>
 
-    <!-- Shift time -->
     <div class="mt-1 text-[26px] font-medium text-neutral-900 sm:text-4xl">
       11:00 AM - 12:30 PM
     </div>
 
-    <!-- Main button: opens the popup, no request yet -->
     <button
-      class="mt-4 flex h-12 w-full items-center justify-center rounded-lg bg-[#E87500] text-sm font-medium text-white transition-colors duration-300 hover:bg-orange-600 sm:h-14 sm:text-base"
+      class="mt-4 flex h-12 w-full items-center justify-center rounded-lg bg-[#E87500] text-sm font-medium text-white hover:bg-[#E5E5E5] transition-colors duration-300 sm:h-14 sm:text-base"
       @click="openPopup"
     >
       {{ checkedIn ? 'Check Out' : 'Check In' }}
     </button>
 
-    <!-- PopupModals is the shell; the card design lives here -->
     <PopupModals v-if="showPopup" @close="closePopup">
       <div
         class="max-h-[90vh] w-full max-w-[320px] overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:max-w-sm sm:rounded-3xl sm:p-6 md:max-w-md md:p-8"
@@ -48,16 +42,16 @@
         </p>
 
         <div class="mt-4 flex justify-center gap-2 sm:mt-5 sm:gap-3 md:mt-6 md:gap-4">
-          <input
-            v-for="(pin, index) in pins"
+          <input class="h-12 w-12 rounded-lg border border-neutral-300 text-center text-lg font-medium text-neutral-900 focus:border-[#E87500] focus:ring focus:ring-[#E87500]/30 sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl"
+            v-for="(_, index) in 4"
             :key="index"
+            :value="pins[index]"
             type="text"
             maxlength="1"
-            class="h-12 w-12 rounded-lg border border-neutral-300 text-center text-lg font-medium text-neutral-900 focus:border-[#E87500] focus:ring focus:ring-[#E87500]/30 sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl"
+            autocomplete="off"
             v-model="pins[index]"
-            @input="() => { if (pins[index] && index < pins.length - 1) focusBox(index + 1) }"
-            @keydown.backspace="() => { if (!pins[index] && index > 0) focusBox(index - 1) }"
-            ref="el => pinRefs[index] = el"
+            @input="handleInput(index)"
+            @keydown.backspace="handleBackspace(index)"
           />
         </div>
 
@@ -76,10 +70,10 @@
       </div>
     </PopupModals>
 
-    <!-- Attendance -->
     <h2 class="mt-10 text-xl font-medium text-neutral-900">Attendance Progress</h2>
     <p class="text-xs text-neutral-500">Session: 02/03/2026 - 05/15/2026</p>
 
+    <!-- CALENDAR SECTION -->
     <CalendarSection class="mt-3" />
   </div>
 </template>
@@ -117,20 +111,16 @@ const checkError = ref<string | null>(null)
 const submitting = ref(false)
 
 const pins = ref<string[]>(['', '', '', ''])
-const pinRefs = ref<HTMLInputElement[]>([])
 const pinComplete = computed(() => pins.value.every((d) => d !== ''))
-
-function focusBox(index : number) {
-  pinRefs.value[index]?.focus() 
-}
-
 
 function openPopup() {
   actionType.value = checkedIn.value ? 'checkout' : 'checkin'
   checkError.value = null
   pins.value = [ '', '', '', '']
   showPopup.value = true
-  nextTick(() => focusBox(0))
+  console.log('showPopup:', showPopup.value)
+  
+  nextTick(() => { document.getElementById('pin-0')?.focus() })
 }
 
 function closePopup() {
@@ -140,6 +130,19 @@ function closePopup() {
   checkError.value = null
 }
 
+function handleInput(index: number) {
+  pins.value[index] = pins.value[index].replace(/\D/g, '') 
+
+  if (pins.value[index] && index < 3) {
+    document.getElementById('pin-' + (index + 1))?.focus()
+  }
+}
+
+function handleBackspace(index: number) {
+  if (!pins.value[index] && index > 0) {
+    document.getElementById('pin-' + (index - 1))?.focus()
+  }
+}
 
 async function handleClick() 
 {
@@ -166,7 +169,5 @@ async function handleClick()
 
   showPopup.value = true
 }
-
-
 
 </script>
