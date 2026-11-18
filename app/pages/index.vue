@@ -45,7 +45,7 @@
           <input class="h-12 w-12 rounded-lg border border-neutral-300 text-center text-lg font-medium text-neutral-900 focus:border-[#E87500] focus:ring focus:ring-[#E87500]/30 sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl"
             v-for="(_, index) in 4"
             :key="index"
-            :value="pins[index]"
+            :id="'pin-' + index"
             type="text"
             maxlength="1"
             autocomplete="off"
@@ -88,7 +88,6 @@ const formattedDate = new Date().toLocaleDateString('en-US', {
 
 
 
-// fetching intern email, number, and name data
 const { data : intern, pending : internPending, error : internError, } = useFetch(`/api/intern`, { 
                method : 'POST',
              })
@@ -96,9 +95,8 @@ const { data : intern, pending : internPending, error : internError, } = useFetc
 // placeholder for intern ID, because betterauth isn't implemented yet
 const internID = "001" 
 
-// fetching intern clock in and clock out times
 // no implementation for authorization, so a placeholder value for user_id is here
-const  { data : timeEntries, pending : timePending, error : timeError, } = useFetch(`/api/intern/time/${internID}`, {
+const  { data : timeEntries, pending : timePending, error : timeError, } = useFetch<any>(`/api/intern/time/${internID}`, {
                method : 'GET', 
              })
              
@@ -144,28 +142,38 @@ function handleBackspace(index: number) {
 
 async function handleClick() 
 {
-  const action = checkedIn.value ? 'checkout' : 'checkin'
-  checkedIn.value = false 
-  actionType.value = 'checkin' 
-  checkError.value = null
+  if (!timeEntries.value) {
+    return
+  }
+
   submitting.value = true
+  checkError.value = null
+
+  const now = new Date().toLocaleDateString('en-US')
+
+  let clockIn = null
+  let clockOut = null
+
+  if (actionType.value === 'checkin') {
+    clockIn = now
+  } else {
+    clockIn = timeEntries.value.clock_in_time
+    clockOut = now
+  }
 
   try {
     await $fetch(`/api/intern/time/${internID}`, {
             method: 'POST',
-            body: { action }, 
+            body: { shift_ID: timeEntries.value.shift_ID, internID: internID, clock_in_time: clockIn, clock_out_time: clockOut }, 
           }) 
   
-  checkedIn.value = action === 'checkin'
-  await refreshTimes()
-
-  } catch {
-    checkError.value = action === 'checkin' ? 'Check-in failed. Please try again.' : 'Check-out failed. Please try again.'
+  await refreshShift()
+  closePopup()
+  } catch (err) {
+    checkError.value = actionType.value === 'checkin' ? 'Check-in failed. Please try again.' : 'Check-out failed. Please try again.'
   } finally {
     submitting.value = false
   }
-
-  showPopup.value = true
 }
 
 </script>
