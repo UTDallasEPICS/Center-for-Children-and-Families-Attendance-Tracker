@@ -86,12 +86,11 @@ const formattedDate = new Date().toLocaleDateString('en-US', {
   day: 'numeric'
 })
 
-const route = useRoute()
+
 
 // fetching intern email, number, and name data
 const { data : intern, pending : internPending, error : internError, } = useFetch(`/api/intern`, { 
                method : 'POST',
-               body : computed(() => ({id : route.params.id })), // need to implement body still
              })
 
 // placeholder for intern ID, because betterauth isn't implemented yet
@@ -101,7 +100,6 @@ const internID = "001"
 // no implementation for authorization, so a placeholder value for user_id is here
 const  { data : timeEntries, pending : timePending, error : timeError, } = useFetch(`/api/intern/time/${internID}`, {
                method : 'GET', 
-               query : computed(() => ({ id : route.params.id })),
              })
              
 const checkedIn = ref(false)
@@ -131,7 +129,7 @@ function closePopup() {
 }
 
 function handleInput(index: number) {
-  pins.value[index] = pins.value[index].replace(/\D/g, '') 
+  pins.value[index] = (pins.value[index] ?? '').replace(/\D/g, '') 
 
   if (pins.value[index] && index < 3) {
     document.getElementById('pin-' + (index + 1))?.focus()
