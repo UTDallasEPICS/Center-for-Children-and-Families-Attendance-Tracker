@@ -25,11 +25,9 @@ export default defineEventHandler(async (event) => {
     const previous_shifts = []
     const future_shifts = []
 
-    attendanceRecords.forEach((record) => {
-        // Use the scheduled shift date, NOT the clock-in time
-        const shiftTime = new Date(
-            record.scheduled_day.start_time
-        ).getTime()
+attendanceRecords.forEach((record) => {
+    const shiftTime = record.scheduled_day.start_time;
+})
 
         const shift = {
             datetime: record.scheduled_day.start_time.toISOString(),
