@@ -1,97 +1,75 @@
 <script setup lang="ts">
-const isOpen = ref(false)
 import type { NavigationMenuItem } from '@nuxt/ui'
-const route = useRoute()
+
+const isModalOpen = ref(false)
+
 const items = ref<NavigationMenuItem[]>([
   { label: 'Dashboard', to: '/' },
-  { label: 'Messages', to: '/' },
   { label: 'Participant Check-In', to: '/participant' },
   { label: 'Site Management', to: '/siteManager' },
-  { label: 'Intern Information', to: '/' },
-  { label: 'Participant Information', to: '/' }
 ])
-
-watch(() => route.path, () => {
-  isOpen.value = false
-})
-
 </script>
 
 <template>
-  <div class="w-full bg-[#E87500] py-2 pt-4">
-    <UDashboardNavbar toggle-side="left" :ui="{ root: 'relative border-none'} ">
-      <template #toggle>
-          <UButton
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-menu"
-            class="rounded-full !text-white hover:!bg-white/20"
-            size="xl"
-            :ui="{ leadingIcon: 'size-8' }"
-            @click="isOpen = true"
-          />
-      </template>
-
-      <template #right>
-        <UDropdownMenu 
-          :items="[
-            [{ label: 'Profile', icon: 'i-lucide-user' }],
-            [{ label: 'Settings', icon: 'i-lucide-settings' }],
-            [{ label: 'Logout', icon: 'i-lucide-log-out' }]
-          ]"
-        >
-          <UButton
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-user"
-            class="rounded-full !text-white hover:!bg-white/20"
-            size="xl"
-            :ui="{ leadingIcon: 'size-8' }"
-          />
-        </UDropdownMenu>
-      </template>
-
-      <template #left>
-        <div class = "absolute left-1/2 -translate-x-1/2 bg-transparent">
-          <img  
-            src="/UTD-Logo-2.png"
-            alt="UTD Logo"
-            class="h-16 object-contain mx-auto "
-          />
-        </div>
-      </template>
-    </UDashboardNavbar>
-  </div>
-
-   <Teleport to="body">
-   <div v-if="isOpen" class="fixed inset-0 z-[100] bg-white flex flex-col p-6 gap-4 items-start" >
-      <UButton
-        variant="ghost"
-        icon="i-lucide-x"
-        class="self-start !text-black"
-        @click="isOpen = false"
-        
+  <header
+    class="w-full bg-[var(--color-brand-orange)] h-[100px] lg:h-[64px] pl-4 flex items-center"
+  >
+    <!-- Left: Logo -->
+    <div class="flex items-center shrink-0 pr-6">
+      <NuxtImg
+        src="/UTD-Logo.svg"
+        alt="UTD Mobile Logo"
+        class="block h-10 lg:h-15 w-auto xl:hidden"
       />
-      <UButton variant="ghost" label="Dashboard" to="/" size="xl" class="!text-black"/>
-      <UButton variant="ghost" label="Messages" to="/" size="xl" class="!text-black"/>
-      <UButton variant="ghost" label="Participant Check-In" to="/participant" size="xl" class="!text-black"/>
-      <UButton variant="ghost" label="Site Management" to="/siteManager" size="xl" class="!text-black"/>
-      <UButton variant="ghost" label="Intern Information" to="/" size="xl" class="!text-black"/>
-      <UButton variant="ghost" label="Participant Information" to="/" size="xl" class="!text-black"/>
+
+      <NuxtImg
+        src="/UTD-Logo-expanded.svg"
+        alt="UTD Desktop Logo"
+        class="hidden h-10 w-auto xl:block"
+      />
     </div>
-  </Teleport>
 
+    <!-- Mobile: Hamburger menu -->
+    <div class="flex md:hidden ml-auto pr-4">
+      <UModal v-model:open="isModalOpen" fullscreen>
+        <UButton
+          icon="i-lucide-menu"
+          color="neutral"
+          variant="ghost"
+          class="text-white"
+          size="xl"
+        />
 
- <div class="w-full bg-white shadow sticky top-0 z-50 hidden md:block ">
+        <template #body>
+          <div class="flex flex-col gap-6 p-6">
+            <NuxtLink
+              v-for="item in items"
+              :key="item.to"
+              :to="item.to"
+              @click="isModalOpen = false"
+              class="text-lg text-gray-800 hover:underline hover:text-[var(--color-brand-orange)] border-b border-gray-200 pb-4"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </div>
+        </template>
+      </UModal>
+    </div>
+
+    <!-- Desktop: Tabs -->
+  <div class="hidden md:block flex-1 h-full pl-4 min-w-0">
     <UNavigationMenu
       :items="items"
       color="neutral"
       variant="link"
-      class="w-full justify-center"
+      class="w-full h-full [&>div]:w-full [&>div]:h-full"
       :ui="{
-        list: 'isolate min-w-0 flex items-center gap-[clamp(4rem,4vw,6rem)]',
-        linkLabel: 'text-[clamp(.75rem,1.25vw,1.5rem)] !text-black'
+        root: 'w-full h-full max-w-none',
+        list: 'w-full h-full flex items-stretch justify-start gap-0',
+        item: 'flex-none flex',
+        link: 'w-full h-full flex items-end justify-start text-lg px-6 pt-4 pb-2.5 whitespace-nowrap text-white hover:underline hover:bg-transparent hover:text-white/75 data-[active]:bg-transparent data-[active]:text-white transition-colors'
       }"
     />
   </div>
+  </header>
 </template>

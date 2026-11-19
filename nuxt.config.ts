@@ -25,7 +25,7 @@ export default defineNuxtConfig({
     ui: {colorMode: false},
     components: true,
 
-    modules: ["@nuxt/eslint", "@nuxt/ui"],
+    modules: ["@nuxt/eslint", "@nuxt/ui", "@nuxt/image"],
 
     fonts: {
         families: [
